@@ -62,7 +62,7 @@ export default function Admin() {
     setLoggingIn(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-    } catch (err) {
+    } catch {
       setLoginError('Invalid email or password');
     }
     setLoggingIn(false);
