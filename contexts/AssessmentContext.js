@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { generalQuestions, roleQuestions, courseCatalog } from '../data/questions';
+import React, { createContext, useContext, useState } from 'react';
+import { aptitudeQuestions, generalQuestions, roleQuestions, courseCatalog } from '../data/questions';
 
 const AssessmentContext = createContext();
 
@@ -7,124 +7,102 @@ export function useAssessment() {
   return useContext(AssessmentContext);
 }
 
+// Fisher-Yates shuffle, returns `count` random items from `pool`
+function pickRandom(pool, count = 10) {
+  const shuffled = [...pool];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, count);
+}
+
 export function AssessmentProvider({ children }) {
-  // User information
   const [biodata, setBiodata] = useState({
     fullName: '',
     email: '',
     phone: '',
     ageGroup: '',
-    consultant: '', // NEW: Add this line
+    consultant: '',
   });
 
-  // Selected role
   const [selectedRole, setSelectedRole] = useState(null);
 
-  // Current assessment stage
+  // Stages: welcome → biodata → roleSelection → aptitudeQuestions → generalQuestions → roleQuestions → results
   const [stage, setStage] = useState('welcome');
 
-  // Current batch index (0 or 1 for each question set)
+  // 0 or 1 — each section has 2 batches of 5 questions
   const [currentBatch, setCurrentBatch] = useState(0);
 
-  // Question set being used (general or role-specific)
-  const [currentQuestionSet, setCurrentQuestionSet] = useState('general');
+  // Which section is active
+  const [currentQuestionSet, setCurrentQuestionSet] = useState('aptitude');
 
-  // All answers
-  const [answers, setAnswers] = useState({
-    general: {},
-    roleSpecific: {}
+  // Randomly selected questions for this session (set when role is chosen)
+  const [sessionQuestions, setSessionQuestions] = useState({
+    aptitude: [],
+    general: [],
+    roleSpecific: [],
   });
 
-  // Assessment results
+  // Answers stored as { [questionId]: 'a' | 'b' | 'c' | 'd' }
+  const [answers, setAnswers] = useState({
+    aptitude: {},
+    general: {},
+    roleSpecific: {},
+  });
+
   const [results, setResults] = useState({
     successRate: 0,
+    sectionScores: { aptitude: 0, general: 0, roleSpecific: 0 },
     recommendations: [],
     strengths: [],
-    weaknesses: []
+    weaknesses: [],
   });
 
-  // Initialize with clean state
-  const [isInitialized, setIsInitialized] = useState(false);
-  
-  useEffect(() => {
-    if (!isInitialized) {
-      setIsInitialized(true);
-    }
-  }, [isInitialized]);
-
-  // Set biodata information
   const updateBiodata = (data) => {
-    setBiodata({ ...biodata, ...data });
+    setBiodata(prev => ({ ...prev, ...data }));
   };
 
-  // Select role
   const selectRole = (role) => {
     setSelectedRole(role);
   };
 
-  // Switch role during assessment (keeps biodata, resets questions)
-  const switchRole = (newRole) => {
-    setSelectedRole(newRole);
-    // Reset answers and go back to general questions
-    setAnswers({
-      general: {},
-      roleSpecific: {}
+  // Initialize random question sets for this session
+  const initializeSessionQuestions = (role) => {
+    setSessionQuestions({
+      aptitude: pickRandom(aptitudeQuestions, 10),
+      general: pickRandom(generalQuestions, 10),
+      roleSpecific: pickRandom(roleQuestions[role], 10),
     });
-    setStage('generalQuestions');
-    setCurrentQuestionSet('general');
-    setCurrentBatch(0);
   };
 
-  // Go back to role selection (keeps biodata, resets questions)
-  const goBackToRoleSelection = () => {
-    setAnswers({
-      general: {},
-      roleSpecific: {}
-    });
-    setStage('roleSelection');
-    setCurrentQuestionSet('general');
-    setCurrentBatch(0);
-  };
-
-  // Start assessment
   const startAssessment = () => {
     resetAssessment();
     setStage('biodata');
   };
 
-  // Get current batch of questions (5 questions at a time)
+  // Get current batch of 5 questions
   const getCurrentBatch = () => {
-    const questions = currentQuestionSet === 'general' 
-      ? generalQuestions 
-      : roleQuestions[selectedRole];
-    
+    let questions = [];
+    if (currentQuestionSet === 'aptitude') questions = sessionQuestions.aptitude;
+    else if (currentQuestionSet === 'general') questions = sessionQuestions.general;
+    else questions = sessionQuestions.roleSpecific;
+
     const startIndex = currentBatch * 5;
-    const endIndex = startIndex + 5;
-    return questions.slice(startIndex, endIndex);
+    return questions.slice(startIndex, startIndex + 5);
   };
 
-  // Record answers for a batch of questions
+  // Record answers for the current batch
   const recordBatchAnswers = (batchAnswers) => {
-    if (currentQuestionSet === 'general') {
-      setAnswers({
-        ...answers,
-        general: {
-          ...answers.general,
-          ...batchAnswers
-        }
-      });
-    } else {
-      setAnswers({
-        ...answers,
-        roleSpecific: {
-          ...answers.roleSpecific,
-          ...batchAnswers
-        }
-      });
-    }
+    setAnswers(prev => ({
+      ...prev,
+      [currentQuestionSet]: {
+        ...prev[currentQuestionSet],
+        ...batchAnswers,
+      },
+    }));
   };
 
-  // Move to the next stage
   const nextStage = () => {
     switch (stage) {
       case 'welcome':
@@ -134,16 +112,25 @@ export function AssessmentProvider({ children }) {
         setStage('roleSelection');
         break;
       case 'roleSelection':
-        setStage('generalQuestions');
-        setCurrentQuestionSet('general');
+        // Role has been chosen — initialize random questions then proceed
+        initializeSessionQuestions(selectedRole);
+        setStage('aptitudeQuestions');
+        setCurrentQuestionSet('aptitude');
         setCurrentBatch(0);
+        break;
+      case 'aptitudeQuestions':
+        if (currentBatch === 0) {
+          setCurrentBatch(1);
+        } else {
+          setStage('generalQuestions');
+          setCurrentQuestionSet('general');
+          setCurrentBatch(0);
+        }
         break;
       case 'generalQuestions':
         if (currentBatch === 0) {
-          // Move to second batch of general questions
           setCurrentBatch(1);
         } else {
-          // Move to role-specific questions
           setStage('roleQuestions');
           setCurrentQuestionSet('roleSpecific');
           setCurrentBatch(0);
@@ -151,10 +138,8 @@ export function AssessmentProvider({ children }) {
         break;
       case 'roleQuestions':
         if (currentBatch === 0) {
-          // Move to second batch of role questions
           setCurrentBatch(1);
         } else {
-          // Calculate results and move to results
           calculateResults();
           setStage('results');
         }
@@ -164,7 +149,6 @@ export function AssessmentProvider({ children }) {
     }
   };
 
-  // Go back to previous stage
   const prevStage = () => {
     switch (stage) {
       case 'biodata':
@@ -173,21 +157,26 @@ export function AssessmentProvider({ children }) {
       case 'roleSelection':
         setStage('biodata');
         break;
-      case 'generalQuestions':
+      case 'aptitudeQuestions':
         if (currentBatch === 1) {
-          // Go back to first batch of general questions
           setCurrentBatch(0);
         } else {
-          // Go back to role selection
           setStage('roleSelection');
+        }
+        break;
+      case 'generalQuestions':
+        if (currentBatch === 1) {
+          setCurrentBatch(0);
+        } else {
+          setStage('aptitudeQuestions');
+          setCurrentQuestionSet('aptitude');
+          setCurrentBatch(1);
         }
         break;
       case 'roleQuestions':
         if (currentBatch === 1) {
-          // Go back to first batch of role questions
           setCurrentBatch(0);
         } else {
-          // Go back to general questions (second batch)
           setStage('generalQuestions');
           setCurrentQuestionSet('general');
           setCurrentBatch(1);
@@ -198,218 +187,159 @@ export function AssessmentProvider({ children }) {
     }
   };
 
-  // FIXED: Calculate assessment results with proper category analysis
+  // ─────────────────────────────────────────────
+  // SCORING
+  // Section weights: Aptitude 50%, General IT 25%, Specific IT 25%
+  // Each question max = 100 pts, 10 questions per section → section max = 1000 pts
+  // Section score = earned / 1000 (0–1)
+  // ─────────────────────────────────────────────
   const calculateResults = () => {
-    console.log('=== CALCULATING RESULTS ===');
-    console.log('General answers:', answers.general);
-    console.log('Role-specific answers:', answers.roleSpecific);
-    console.log('Selected role:', selectedRole);
-    
-    // Count 'yes' answers
-    const generalYesCount = Object.values(answers.general).filter(answer => answer === true).length;
-    const roleYesCount = Object.values(answers.roleSpecific).filter(answer => answer === true).length;
-    
-    // Calculate success rate with weighting
-    const generalWeight = 0.4;
-    const roleWeight = 0.6;
-    
-    const generalScore = generalYesCount / generalQuestions.length;
-    const roleScore = roleYesCount / roleQuestions[selectedRole].length;
-    
-    // Apply curve to the scores with a minimum base of 55%
-    const curveScore = (score) => {
-      if (score <= 0.5) {
-        return 0.55 + (score * 0.4); 
-      } else {
-        return 0.75 + (score - 0.5) * (0.15 / 0.3);
-      }
-    };
-    
-    const curvedGeneralScore = curveScore(generalScore);
-    const curvedRoleScore = curveScore(roleScore);
-    
-    const weightedScore = (curvedGeneralScore * generalWeight) + (curvedRoleScore * roleWeight);
-    const finalSuccessRate = Math.max(55, Math.round(weightedScore * 100));
-    
-    // FIXED: Group questions by category and calculate percentage for each category
-    const categoryStats = {};
-    const recommendations = [];
-    
-    // Process general questions
-    generalQuestions.forEach(question => {
-      const category = question.category;
-      const answered = answers.general[question.id];
-      
-      if (!categoryStats[category]) {
-        categoryStats[category] = {
-          total: 0,
-          correct: 0,
-          questions: [],
-          isRoleSpecific: false
-        };
-      }
-      
-      categoryStats[category].total++;
-      categoryStats[category].questions.push(question);
-      
-      if (answered === true) {
-        categoryStats[category].correct++;
-      } else if (answered === false) {
-        recommendations.push({
-          questionId: question.id,
-          questionText: question.text,
-          courseName: question.courseRecommendation,
-          category: question.category,
-          courseDetails: courseCatalog[question.courseRecommendation] || null
-        });
-      }
-    });
-    
-    // Process role-specific questions
-    if (selectedRole && roleQuestions[selectedRole]) {
-      roleQuestions[selectedRole].forEach(question => {
-        const category = question.category;
-        const answered = answers.roleSpecific[question.id];
-        
-        if (!categoryStats[category]) {
-          categoryStats[category] = {
-            total: 0,
-            correct: 0,
-            questions: [],
-            isRoleSpecific: true
-          };
+    const computeSectionScore = (sectionAnswers, sectionQuestions) => {
+      let earned = 0;
+      sectionQuestions.forEach(q => {
+        const chosen = sectionAnswers[q.id];
+        if (chosen && q.options[chosen]) {
+          earned += q.options[chosen].points;
         }
-        
-        categoryStats[category].total++;
-        categoryStats[category].questions.push(question);
-        
-        if (answered === true) {
-          categoryStats[category].correct++;
-        } else if (answered === false) {
+      });
+      const maxPossible = sectionQuestions.length * 100;
+      return maxPossible > 0 ? earned / maxPossible : 0;
+    };
+
+    const aptitudeScore = computeSectionScore(answers.aptitude, sessionQuestions.aptitude);
+    const generalScore = computeSectionScore(answers.general, sessionQuestions.general);
+    const roleScore = computeSectionScore(answers.roleSpecific, sessionQuestions.roleSpecific);
+
+    const weightedScore = (aptitudeScore * 0.5) + (generalScore * 0.25) + (roleScore * 0.25);
+    const finalSuccessRate = Math.round(weightedScore * 100);
+
+    // Category analysis — avg score per category
+    const categoryStats = {};
+
+    const processSection = (sectionAnswers, sectionQuestions) => {
+      sectionQuestions.forEach(q => {
+        const cat = q.category;
+        const chosen = sectionAnswers[q.id];
+        const earned = chosen && q.options[chosen] ? q.options[chosen].points : 0;
+
+        if (!categoryStats[cat]) {
+          categoryStats[cat] = { totalEarned: 0, totalMax: 0 };
+        }
+        categoryStats[cat].totalEarned += earned;
+        categoryStats[cat].totalMax += 100;
+      });
+    };
+
+    processSection(answers.aptitude, sessionQuestions.aptitude);
+    processSection(answers.general, sessionQuestions.general);
+    processSection(answers.roleSpecific, sessionQuestions.roleSpecific);
+
+    const strengths = [];
+    const weaknesses = [];
+
+    Object.entries(categoryStats).forEach(([cat, stats]) => {
+      const pct = stats.totalMax > 0 ? stats.totalEarned / stats.totalMax : 0;
+      if (pct >= 0.8) strengths.push(cat);
+      else if (pct <= 0.4) weaknesses.push(cat);
+    });
+
+    // Recommendations: questions where earned points <= 50
+    const recommendations = [];
+
+    const collectRecommendations = (sectionAnswers, sectionQuestions, isRoleSpecific = false) => {
+      sectionQuestions.forEach(q => {
+        const chosen = sectionAnswers[q.id];
+        const earned = chosen && q.options[chosen] ? q.options[chosen].points : 0;
+        if (earned <= 50) {
           recommendations.push({
-            questionId: question.id,
-            questionText: question.text,
-            courseName: question.courseRecommendation,
-            category: question.category,
-            courseDetails: courseCatalog[question.courseRecommendation] || null
+            questionId: q.id,
+            questionText: q.text,
+            courseName: q.courseRecommendation,
+            category: q.category,
+            isRoleSpecific,
+            earnedPoints: earned,
+            courseDetails: courseCatalog[q.courseRecommendation] || null,
           });
         }
       });
-    }
-    
-    console.log('Category stats:', categoryStats);
-    
-    // FIXED: Determine strengths and weaknesses based on category performance
-    const strengths = [];
-    const weaknesses = [];
-    
-    Object.entries(categoryStats).forEach(([category, stats]) => {
-      const percentage = stats.correct / stats.total;
-      console.log(`Category: ${category}, Correct: ${stats.correct}/${stats.total} = ${(percentage * 100).toFixed(1)}%`);
-      
-      // FIXED: More balanced thresholds for strengths and weaknesses
-      if (percentage >= 0.8) {
-        // 80% or more correct answers = strength
-        strengths.push(category);
-        console.log(`✅ ${category} added to STRENGTHS (${(percentage * 100).toFixed(1)}%)`);
-      } else if (percentage <= 0.4) {
-        // 40% or less correct answers = weakness  
-        weaknesses.push(category);
-        console.log(`❌ ${category} added to WEAKNESSES (${(percentage * 100).toFixed(1)}%)`);
-      } else {
-        console.log(`➖ ${category} is NEUTRAL (${(percentage * 100).toFixed(1)}%)`);
-      }
-    });
-    
-    console.log('Final strengths:', strengths);
-    console.log('Final weaknesses:', weaknesses);
-    
-    // Sort and limit recommendations (prioritize role-specific)
+    };
+
+    collectRecommendations(answers.aptitude, sessionQuestions.aptitude, false);
+    collectRecommendations(answers.general, sessionQuestions.general, false);
+    collectRecommendations(answers.roleSpecific, sessionQuestions.roleSpecific, true);
+
+    // Sort: role-specific first, then by lowest score
     recommendations.sort((a, b) => {
-      // Get the role-specific question prefixes
-      const rolePrefix = selectedRole === 'networkAdmin' ? 'network' : 'cyber';
-      const aIsRoleSpecific = a.questionId.toLowerCase().includes(rolePrefix);
-      const bIsRoleSpecific = b.questionId.toLowerCase().includes(rolePrefix);
-      
-      if (aIsRoleSpecific && !bIsRoleSpecific) return -1;
-      if (!aIsRoleSpecific && bIsRoleSpecific) return 1;
-      return 0;
+      if (a.isRoleSpecific && !b.isRoleSpecific) return -1;
+      if (!a.isRoleSpecific && b.isRoleSpecific) return 1;
+      return a.earnedPoints - b.earnedPoints;
     });
-    
-    const topRecommendations = recommendations.slice(0, 5);
-    
-    console.log('Final recommendations:', topRecommendations);
-    
+
     const calculatedResults = {
       successRate: finalSuccessRate,
-      recommendations: topRecommendations,
-      strengths: [...new Set(strengths)], // Remove any duplicates just in case
-      weaknesses: [...new Set(weaknesses)] // Remove any duplicates just in case
+      sectionScores: {
+        aptitude: Math.round(aptitudeScore * 100),
+        general: Math.round(generalScore * 100),
+        roleSpecific: Math.round(roleScore * 100),
+      },
+      recommendations: recommendations.slice(0, 5),
+      strengths: [...new Set(strengths)],
+      weaknesses: [...new Set(weaknesses)],
     };
 
     setResults(calculatedResults);
-    
-    console.log('=== RESULTS CALCULATION COMPLETE ===');
-    
-    // Return the results for external use (like in QuestionBatch)
     return calculatedResults;
   };
 
-  // Reset the assessment to initial state
   const resetAssessment = () => {
-    setBiodata({
-      fullName: '',
-      email: '',
-      phone: '',
-      ageGroup: '',
-      consultant: '', // NEW: Add this line
-    });
+    setBiodata({ fullName: '', email: '', phone: '', ageGroup: '', consultant: '' });
     setSelectedRole(null);
     setStage('welcome');
     setCurrentBatch(0);
-    setCurrentQuestionSet('general');
-    setAnswers({
-      general: {},
-      roleSpecific: {}
-    });
-    setResults({
-      successRate: 0,
-      recommendations: [],
-      strengths: [],
-      weaknesses: []
-    });
+    setCurrentQuestionSet('aptitude');
+    setSessionQuestions({ aptitude: [], general: [], roleSpecific: [] });
+    setAnswers({ aptitude: {}, general: {}, roleSpecific: {} });
+    setResults({ successRate: 0, sectionScores: { aptitude: 0, general: 0, roleSpecific: 0 }, recommendations: [], strengths: [], weaknesses: [] });
   };
 
-  // Get batch progress information
+  const switchRole = (newRole) => {
+    setSelectedRole(newRole);
+    initializeSessionQuestions(newRole);
+    setAnswers({ aptitude: {}, general: {}, roleSpecific: {} });
+    setStage('aptitudeQuestions');
+    setCurrentQuestionSet('aptitude');
+    setCurrentBatch(0);
+  };
+
+  const goBackToRoleSelection = () => {
+    setAnswers({ aptitude: {}, general: {}, roleSpecific: {} });
+    setStage('roleSelection');
+    setCurrentQuestionSet('aptitude');
+    setCurrentBatch(0);
+  };
+
+  // Progress: 6 total batches (aptitude×2, general×2, role×2)
   const getBatchProgress = () => {
-    let totalBatches = 4; // 2 general + 2 role-specific
-    let completedBatches = 0;
-    
-    if (stage === 'generalQuestions') {
-      completedBatches = currentBatch;
-    } else if (stage === 'roleQuestions') {
-      completedBatches = 2 + currentBatch;
-    } else if (stage === 'results') {
-      completedBatches = 4;
-    }
-    
-    return { 
+    const stageOffset = {
+      aptitudeQuestions: 0,
+      generalQuestions: 2,
+      roleQuestions: 4,
+    };
+    const offset = stageOffset[stage] ?? 0;
+    const completedBatches = offset + currentBatch;
+    const totalBatches = 6;
+    return {
       current: completedBatches + 1,
       total: totalBatches,
-      percentage: Math.round(((completedBatches + 1) / totalBatches) * 100)
+      percentage: Math.round(((completedBatches + 1) / totalBatches) * 100),
     };
   };
 
-  // Get role name for display
   const getRoleName = () => {
-    const roleNames = {
-      networkAdmin: "Network Administration",
-      cybersecurity: "Cybersecurity"
-    };
+    const roleNames = { networkAdmin: 'Network Administration', cybersecurity: 'Cybersecurity' };
     return roleNames[selectedRole] || '';
   };
 
-  // Value object to be provided to context consumers
   const value = {
     biodata,
     updateBiodata,
@@ -420,6 +350,7 @@ export function AssessmentProvider({ children }) {
     currentQuestionSet,
     answers,
     results,
+    sessionQuestions,
     nextStage,
     prevStage,
     recordBatchAnswers,
@@ -430,21 +361,7 @@ export function AssessmentProvider({ children }) {
     getCurrentBatch,
     getBatchProgress,
     getRoleName,
-    calculateResults, // ADDED: Now exposed for external use
-    // Keep these for backward compatibility with existing components
-    getCurrentQuestion: () => {
-      // This is mainly for the old QuestionCard component if still used
-      const batch = getCurrentBatch();
-      return batch[0] || null;
-    },
-    recordAnswer: (questionId, answer) => {
-      // For backward compatibility
-      recordBatchAnswers({ [questionId]: answer });
-    },
-    getProgress: () => {
-      // For backward compatibility, but using batch progress
-      return getBatchProgress();
-    }
+    calculateResults,
   };
 
   return (

@@ -25,6 +25,7 @@ export default function Assessment() {
         return <BiodataForm />;
       case 'roleSelection':
         return <RoleSelection />;
+      case 'aptitudeQuestions':
       case 'generalQuestions':
       case 'roleQuestions':
         return <QuestionBatch />;

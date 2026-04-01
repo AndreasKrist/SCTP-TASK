@@ -1,25 +1,10 @@
 /* Define all questions here */
 
-// Biodata questions - UPDATED with Consultant field
+// Biodata questions
 export const biodataQuestions = [
-  {
-    id: "fullName",
-    label: "Full Name",
-    type: "text",
-    required: true,
-  },
-  {
-    id: "email",
-    label: "Email Address",
-    type: "email",
-    required: true,
-  },
-  {
-    id: "phone",
-    label: "Phone Number",
-    type: "tel",
-    required: false,
-  },
+  { id: "fullName", label: "Full Name", type: "text", required: true },
+  { id: "email", label: "Email Address", type: "email", required: true },
+  { id: "phone", label: "Phone Number", type: "tel", required: false },
   {
     id: "ageGroup",
     label: "Age Group",
@@ -27,296 +12,1192 @@ export const biodataQuestions = [
     options: ["18-24", "25-34", "35-44", "45-54", "55+"],
     required: true,
   },
-  // NEW: Consultant field
   {
     id: "consultant",
     label: "Consultant",
     type: "select",
     options: [
-      "Melvin Tan", 
-      "Irish M", 
-      "Ann Loh", 
-      "Jovelyn Balili", 
-      "Leslie Carsula", 
-      "Stanley Lim", 
-      "Marvin Costales", 
-      "Jennifer Tan", 
-      "Ian Morrison", 
-      "Carolyn Leong"
+      "Melvin Tan",
+      "Irish M",
+      "Ann Loh",
+      "Jovelyn Balili",
+      "Leslie Carsula",
+      "Stanley Lim",
+      "Marvin Costales",
+      "Jennifer Tan",
+      "Ian Morrison",
+      "Carolyn Leong",
     ],
     required: true,
-  }
+  },
 ];
 
-// General IT questions (unchanged)
+// ─────────────────────────────────────────────
+// SECTION 1 — GENERAL APTITUDE (20 questions)
+// Problem Solving, Decision Making, Workplace Behaviour
+// Bank of 20, use 10 per session
+// ─────────────────────────────────────────────
+export const aptitudeQuestions = [
+  {
+    id: "apQ1",
+    text: "You are given unclear instructions. What do you do?",
+    category: "problemSolving",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Start immediately", points: 20 },
+      b: { text: "Ask for clarification", points: 100 },
+      c: { text: "Guess and proceed", points: 10 },
+      d: { text: "Wait until someone tells you", points: 30 },
+    },
+  },
+  {
+    id: "apQ2",
+    text: "You have multiple urgent tasks. What is your approach?",
+    category: "decisionMaking",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Do easiest first", points: 40 },
+      b: { text: "Prioritize by importance", points: 100 },
+      c: { text: "Random selection", points: 10 },
+      d: { text: "Delay all tasks", points: 0 },
+    },
+  },
+  {
+    id: "apQ3",
+    text: "A problem keeps repeating in your work. What do you do?",
+    category: "problemSolving",
+    courseRecommendation: "Troubleshooting Computer Problems",
+    options: {
+      a: { text: "Fix each time it happens", points: 40 },
+      b: { text: "Find root cause", points: 100 },
+      c: { text: "Ignore it", points: 0 },
+      d: { text: "Restart system/workflow", points: 30 },
+    },
+  },
+  {
+    id: "apQ4",
+    text: "You made a mistake in a submitted report.",
+    category: "workplaceBehaviour",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Hide it", points: 0 },
+      b: { text: "Report and correct it", points: 100 },
+      c: { text: "Ignore it", points: 10 },
+      d: { text: "Blame the system", points: 0 },
+    },
+  },
+  {
+    id: "apQ5",
+    text: "You don't know how to complete a task.",
+    category: "problemSolving",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Guess", points: 10 },
+      b: { text: "Ask or research", points: 100 },
+      c: { text: "Avoid task", points: 0 },
+      d: { text: "Wait indefinitely", points: 20 },
+    },
+  },
+  {
+    id: "apQ6",
+    text: "A teammate is underperforming.",
+    category: "workplaceBehaviour",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Report immediately", points: 30 },
+      b: { text: "Help and understand the issue", points: 100 },
+      c: { text: "Ignore", points: 0 },
+      d: { text: "Take over all their tasks", points: 60 },
+    },
+  },
+  {
+    id: "apQ7",
+    text: "You receive criticism on your work.",
+    category: "workplaceBehaviour",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Reject it", points: 0 },
+      b: { text: "Improve from it", points: 100 },
+      c: { text: "Argue", points: 10 },
+      d: { text: "Ignore", points: 20 },
+    },
+  },
+  {
+    id: "apQ8",
+    text: "A system failure happens before a deadline.",
+    category: "decisionMaking",
+    courseRecommendation: "Troubleshooting Computer Problems",
+    options: {
+      a: { text: "Panic", points: 0 },
+      b: { text: "Stabilize and troubleshoot", points: 100 },
+      c: { text: "Ignore", points: 0 },
+      d: { text: "Restart randomly", points: 20 },
+    },
+  },
+  {
+    id: "apQ9",
+    text: "You must decide with incomplete information.",
+    category: "decisionMaking",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Delay decision", points: 10 },
+      b: { text: "Use best available information", points: 100 },
+      c: { text: "Avoid decision", points: 0 },
+      d: { text: "Ask everyone", points: 50 },
+    },
+  },
+  {
+    id: "apQ10",
+    text: "You notice inefficiency in a workflow.",
+    category: "problemSolving",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Ignore", points: 0 },
+      b: { text: "Suggest improvement", points: 100 },
+      c: { text: "Complain only", points: 20 },
+      d: { text: "Do nothing", points: 0 },
+    },
+  },
+  {
+    id: "apQ11",
+    text: "A deadline is at risk.",
+    category: "decisionMaking",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Ignore", points: 0 },
+      b: { text: "Re-prioritize tasks", points: 100 },
+      c: { text: "Delay all work", points: 10 },
+      d: { text: "Wait for instructions", points: 30 },
+    },
+  },
+  {
+    id: "apQ12",
+    text: "You are assigned a new, unfamiliar task.",
+    category: "problemSolving",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Avoid it", points: 0 },
+      b: { text: "Learn and attempt", points: 100 },
+      c: { text: "Guess only", points: 20 },
+      d: { text: "Pass to others", points: 40 },
+    },
+  },
+  {
+    id: "apQ13",
+    text: "A team disagreement occurs.",
+    category: "workplaceBehaviour",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Ignore", points: 0 },
+      b: { text: "Mediate discussion", points: 100 },
+      c: { text: "Take sides", points: 30 },
+      d: { text: "Escalate immediately", points: 50 },
+    },
+  },
+  {
+    id: "apQ14",
+    text: "You are overloaded with work.",
+    category: "decisionMaking",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Do everything randomly", points: 10 },
+      b: { text: "Prioritize tasks", points: 100 },
+      c: { text: "Ignore deadlines", points: 0 },
+      d: { text: "Stop working", points: 0 },
+    },
+  },
+  {
+    id: "apQ15",
+    text: "You find a better way to do a task.",
+    category: "problemSolving",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Ignore the improvement", points: 0 },
+      b: { text: "Suggest improvement", points: 100 },
+      c: { text: "Keep silent", points: 20 },
+      d: { text: "Only tell friends", points: 10 },
+    },
+  },
+  {
+    id: "apQ16",
+    text: "You make a wrong decision.",
+    category: "decisionMaking",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Hide it", points: 0 },
+      b: { text: "Learn and correct", points: 100 },
+      c: { text: "Repeat the mistake", points: 0 },
+      d: { text: "Blame others", points: 10 },
+    },
+  },
+  {
+    id: "apQ17",
+    text: "A task is outside your skill level.",
+    category: "problemSolving",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Refuse", points: 10 },
+      b: { text: "Learn and attempt", points: 100 },
+      c: { text: "Fake it", points: 0 },
+      d: { text: "Avoid completely", points: 20 },
+    },
+  },
+  {
+    id: "apQ18",
+    text: "You are unsure about instructions.",
+    category: "problemSolving",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Proceed anyway", points: 20 },
+      b: { text: "Clarify first", points: 100 },
+      c: { text: "Ignore task", points: 0 },
+      d: { text: "Ask after completion", points: 30 },
+    },
+  },
+  {
+    id: "apQ19",
+    text: "A critical issue occurs during operations.",
+    category: "decisionMaking",
+    courseRecommendation: "Troubleshooting Computer Problems",
+    options: {
+      a: { text: "Ignore", points: 0 },
+      b: { text: "Escalate and troubleshoot", points: 100 },
+      c: { text: "Restart system blindly", points: 20 },
+      d: { text: "Wait for others", points: 30 },
+    },
+  },
+  {
+    id: "apQ20",
+    text: "You are learning a new system.",
+    category: "workplaceBehaviour",
+    courseRecommendation: "IT Workflow and Planning",
+    options: {
+      a: { text: "Avoid using it", points: 0 },
+      b: { text: "Explore and learn step-by-step", points: 100 },
+      c: { text: "Copy others only", points: 40 },
+      d: { text: "Guess randomly", points: 10 },
+    },
+  },
+];
+
+// ─────────────────────────────────────────────
+// SECTION 2 — GENERAL IT AWARENESS (20 questions)
+// Basic IT, Networking, Security, CompTIA A+ Level
+// Bank of 20, use 10 per session
+// ─────────────────────────────────────────────
 export const generalQuestions = [
   {
-    id: "generalQ1",
-    text: "Do you know how to turn on/off a laptop or desktop computer?",
+    id: "genQ1",
+    text: "What does DNS do?",
+    category: "networking",
+    courseRecommendation: "Introduction to Internet Technologies",
+    options: {
+      a: { text: "Stores files", points: 0 },
+      b: { text: "Converts domain names to IP addresses", points: 100 },
+      c: { text: "Blocks viruses", points: 10 },
+      d: { text: "Manages hardware", points: 0 },
+    },
+  },
+  {
+    id: "genQ2",
+    text: "What is RAM used for?",
+    category: "hardware",
+    courseRecommendation: "Computer Hardware Fundamentals",
+    options: {
+      a: { text: "Permanent storage", points: 0 },
+      b: { text: "Temporary working memory", points: 100 },
+      c: { text: "Internet connection", points: 10 },
+      d: { text: "Antivirus protection", points: 0 },
+    },
+  },
+  {
+    id: "genQ3",
+    text: "What is an IP address?",
+    category: "networking",
+    courseRecommendation: "Introduction to Internet Technologies",
+    options: {
+      a: { text: "Device identifier on a network", points: 100 },
+      b: { text: "Password", points: 0 },
+      c: { text: "Software", points: 0 },
+      d: { text: "Cable type", points: 0 },
+    },
+  },
+  {
+    id: "genQ4",
+    text: "What is a firewall?",
+    category: "security",
+    courseRecommendation: "Network Security Fundamentals",
+    options: {
+      a: { text: "Cooling system", points: 0 },
+      b: { text: "Network security filter", points: 100 },
+      c: { text: "Storage device", points: 0 },
+      d: { text: "CPU component", points: 0 },
+    },
+  },
+  {
+    id: "genQ5",
+    text: "What is phishing?",
+    category: "threats",
+    courseRecommendation: "Common Cyber Threats and Attacks",
+    options: {
+      a: { text: "Network protocol", points: 0 },
+      b: { text: "Social engineering attack", points: 100 },
+      c: { text: "Hardware failure", points: 0 },
+      d: { text: "System update", points: 10 },
+    },
+  },
+  {
+    id: "genQ6",
+    text: "What is HTTP used for?",
+    category: "networking",
+    courseRecommendation: "Introduction to Internet Technologies",
+    options: {
+      a: { text: "Web communication", points: 100 },
+      b: { text: "File storage", points: 0 },
+      c: { text: "Antivirus", points: 0 },
+      d: { text: "Hardware control", points: 0 },
+    },
+  },
+  {
+    id: "genQ7",
+    text: "What is a VPN?",
+    category: "security",
+    courseRecommendation: "Network Security Fundamentals",
+    options: {
+      a: { text: "Secure network connection", points: 100 },
+      b: { text: "Virus remover", points: 0 },
+      c: { text: "File storage", points: 0 },
+      d: { text: "Hardware device", points: 0 },
+    },
+  },
+  {
+    id: "genQ8",
+    text: "What does DHCP do?",
+    category: "networking",
+    courseRecommendation: "Network Configuration Essentials",
+    options: {
+      a: { text: "Assigns IP addresses automatically", points: 100 },
+      b: { text: "Blocks websites", points: 0 },
+      c: { text: "Encrypts files", points: 0 },
+      d: { text: "Stores data", points: 0 },
+    },
+  },
+  {
+    id: "genQ9",
+    text: "What is malware?",
+    category: "threats",
+    courseRecommendation: "Common Cyber Threats and Attacks",
+    options: {
+      a: { text: "Useful software", points: 0 },
+      b: { text: "Harmful software", points: 100 },
+      c: { text: "Hardware tool", points: 0 },
+      d: { text: "Network cable", points: 0 },
+    },
+  },
+  {
+    id: "genQ10",
+    text: "What is an operating system?",
+    category: "software",
     courseRecommendation: "Computer Basics 101",
-    category: "basics"
+    options: {
+      a: { text: "Hardware", points: 0 },
+      b: { text: "Software managing computer resources", points: 100 },
+      c: { text: "Browser", points: 0 },
+      d: { text: "Antivirus", points: 10 },
+    },
   },
   {
-    id: "generalQ2",
-    text: "Do you know how to use a web browser (e.g., Chrome, Edge, Firefox)?",
-    courseRecommendation: "Web Browsing Fundamentals",
-    category: "basics" 
+    id: "genQ11",
+    text: "What is the difference between SSD and HDD?",
+    category: "hardware",
+    courseRecommendation: "Computer Hardware Fundamentals",
+    options: {
+      a: { text: "No difference", points: 0 },
+      b: { text: "SSD is a faster storage type", points: 100 },
+      c: { text: "HDD is software", points: 0 },
+      d: { text: "Both are CPUs", points: 0 },
+    },
   },
   {
-    id: "generalQ3",
-    text: "Do you know how to connect to Wi-Fi?",
-    courseRecommendation: "Internet Connectivity Basics",
-    category: "connectivity"
-  },
-  {
-    id: "generalQ4",
-    text: "Do you know how to use email?",
-    courseRecommendation: "Email Communication Essentials",
-    category: "communication"
-  },
-  {
-    id: "generalQ5",
-    text: "Do you know how to use Microsoft Word?",
-    courseRecommendation: "Office Productivity Fundamentals",
-    category: "productivity"
-  },
-  {
-    id: "generalQ6",
-    text: "Do you know how to use copy and paste function?",
+    id: "genQ12",
+    text: "What is cloud computing?",
+    category: "software",
     courseRecommendation: "Computer Basics 101",
-    category: "basics"
+    options: {
+      a: { text: "Local storage only", points: 0 },
+      b: { text: "Internet-based computing services", points: 100 },
+      c: { text: "Offline system", points: 0 },
+      d: { text: "Antivirus system", points: 0 },
+    },
   },
   {
-    id: "generalQ7",
-    text: "Do you know how to use USB drive or external storage device?",
-    courseRecommendation: "File Management Essentials",
-    category: "fileManagement"
+    id: "genQ13",
+    text: "What is a router?",
+    category: "networking",
+    courseRecommendation: "Network Hardware Fundamentals",
+    options: {
+      a: { text: "Connects networks", points: 100 },
+      b: { text: "Stores files", points: 0 },
+      c: { text: "Software only", points: 0 },
+      d: { text: "Antivirus", points: 0 },
+    },
   },
   {
-    id: "generalQ8",
-    text: "Do you know how to install a software (e.g., Zoom, Microsoft Office)?",
+    id: "genQ14",
+    text: "What is bandwidth?",
+    category: "networking",
+    courseRecommendation: "Networking Fundamentals: Connectivity Types",
+    options: {
+      a: { text: "Overall computer speed", points: 0 },
+      b: { text: "Data transfer capacity", points: 100 },
+      c: { text: "Storage size", points: 0 },
+      d: { text: "CPU power", points: 0 },
+    },
+  },
+  {
+    id: "genQ15",
+    text: "What is email spoofing?",
+    category: "threats",
+    courseRecommendation: "Common Cyber Threats and Attacks",
+    options: {
+      a: { text: "Fake email identity", points: 100 },
+      b: { text: "File compression", points: 0 },
+      c: { text: "Hardware issue", points: 0 },
+      d: { text: "Network upgrade", points: 0 },
+    },
+  },
+  {
+    id: "genQ16",
+    text: "What is a switch in networking?",
+    category: "networking",
+    courseRecommendation: "Network Hardware Fundamentals",
+    options: {
+      a: { text: "Connects devices in a LAN", points: 100 },
+      b: { text: "Internet cable", points: 0 },
+      c: { text: "Software", points: 0 },
+      d: { text: "Antivirus", points: 0 },
+    },
+  },
+  {
+    id: "genQ17",
+    text: "What is encryption?",
+    category: "security",
+    courseRecommendation: "Data Encryption Fundamentals",
+    options: {
+      a: { text: "Data protection method", points: 100 },
+      b: { text: "Deleting files", points: 0 },
+      c: { text: "Speeding up PC", points: 0 },
+      d: { text: "Hardware upgrade", points: 0 },
+    },
+  },
+  {
+    id: "genQ18",
+    text: "What is a software update/patch?",
+    category: "software",
     courseRecommendation: "Software Installation and Management",
-    category: "software"
+    options: {
+      a: { text: "Fixes software issues", points: 100 },
+      b: { text: "Deletes the system", points: 0 },
+      c: { text: "Hardware replacement", points: 0 },
+      d: { text: "Internet setup", points: 0 },
+    },
   },
   {
-    id: "generalQ9",
-    text: "Do you know how to adjust simple computer settings like screen brightness, volume, or changing a desktop background?",
-    courseRecommendation: "Computer Configuration Basics",
-    category: "configuration"
+    id: "genQ19",
+    text: "What is a MAC address?",
+    category: "networking",
+    courseRecommendation: "Networking Fundamentals: Connectivity Types",
+    options: {
+      a: { text: "Device hardware identifier", points: 100 },
+      b: { text: "Software license", points: 0 },
+      c: { text: "Password", points: 0 },
+      d: { text: "IP address", points: 10 },
+    },
   },
   {
-    id: "generalQ10",
-    text: "Do you know how to restart a frozen application or reboot your computer when it's not responding?",
+    id: "genQ20",
+    text: "What is troubleshooting?",
+    category: "troubleshooting",
     courseRecommendation: "Troubleshooting Computer Problems",
-    category: "troubleshooting"
-  }
+    options: {
+      a: { text: "Guessing a solution", points: 0 },
+      b: { text: "Systematic problem solving", points: 100 },
+      c: { text: "Ignoring the issue", points: 0 },
+      d: { text: "Restart only", points: 20 },
+    },
+  },
 ];
 
-// Network Admin questions (unchanged)
+// ─────────────────────────────────────────────
+// SECTION 3 — NETWORK ADMINISTRATION (20 questions)
+// ITIL 4 + CompTIA A+ + Network+ + Ops Problem Solving
+// Bank of 20, use 10 per session
+// ─────────────────────────────────────────────
 export const networkAdminQuestions = [
   {
-    id: "networkQ1",
-    text: "Do you know what the Internet is and what it is used for?",
-    courseRecommendation: "Introduction to Internet Technologies",
-    category: "networking"
-  },
-  {
-    id: "networkQ2",
-    text: "Do you know the difference between wired (Ethernet) and wireless (Wi-Fi) connection?",
-    courseRecommendation: "Networking Fundamentals: Connectivity Types",
-    category: "connectivity"
-  },
-  {
-    id: "networkQ3",
-    text: "Have you ever entered a password to access a Wi-Fi network?",
-    courseRecommendation: "Wi-Fi Network Configuration Basics",
-    category: "connectivity"
-  },
-  {
-    id: "networkQ4",
-    text: "Do you know how to check if a device is connected to the internet?",
-    courseRecommendation: "Network Troubleshooting Basics",
-    category: "troubleshooting"
-  },
-  {
-    id: "networkQ5",
-    text: "Have you ever restarted a modem or router to fix a network issue?",
-    courseRecommendation: "Network Hardware Management",
-    category: "hardware"
-  },
-  {
-    id: "networkQ6",
-    text: "Do you know what an IP address is?",
-    courseRecommendation: "IP Addressing and Subnetting",
-    category: "networking"
-  },
-  {
-    id: "networkQ7",
-    text: "Can you find your IP address on your computer or phone?",
-    courseRecommendation: "Network Configuration Essentials",
-    category: "configuration"
-  },
-  {
-    id: "networkQ8",
-    text: "Do you know what a router does in a network?",
-    courseRecommendation: "Network Hardware Fundamentals",
-    category: "hardware"
-  },
-  {
-    id: "networkQ9",
-    text: "Have you ever used the ping command to test if a website is reachable?",
+    id: "netQ1",
+    text: "A user cannot access any websites but can ping internal servers. What is the most likely cause?",
+    category: "troubleshooting",
     courseRecommendation: "Network Diagnostics and Troubleshooting",
-    category: "troubleshooting"
+    options: {
+      a: { text: "Switch failure", points: 20 },
+      b: { text: "DNS resolution issue", points: 100 },
+      c: { text: "RAM issue", points: 0 },
+      d: { text: "VLAN mismatch", points: 40 },
+    },
   },
   {
-    id: "networkQ10",
-    text: "Do you understand what subnetting is and why it's used in networking?",
+    id: "netQ2",
+    text: "A DHCP server fails in one subnet. What is the BEST immediate action?",
+    category: "troubleshooting",
+    courseRecommendation: "Network Configuration Essentials",
+    options: {
+      a: { text: "Reboot all PCs", points: 20 },
+      b: { text: "Check DHCP service and scope", points: 100 },
+      c: { text: "Replace the router", points: 20 },
+      d: { text: "Change IP manually for all users", points: 40 },
+    },
+  },
+  {
+    id: "netQ3",
+    text: "A department reports intermittent disconnections. What should you check FIRST?",
+    category: "troubleshooting",
+    courseRecommendation: "Network Diagnostics and Troubleshooting",
+    options: {
+      a: { text: "CPU usage", points: 0 },
+      b: { text: "Physical layer (cables/switch port)", points: 100 },
+      c: { text: "DNS logs", points: 40 },
+      d: { text: "Antivirus", points: 20 },
+    },
+  },
+  {
+    id: "netQ4",
+    text: "Which OSI layer handles IP addressing and routing?",
+    category: "networking",
+    courseRecommendation: "IP Addressing and Subnetting",
+    options: {
+      a: { text: "Layer 2", points: 40 },
+      b: { text: "Layer 3", points: 100 },
+      c: { text: "Layer 4", points: 20 },
+      d: { text: "Layer 7", points: 0 },
+    },
+  },
+  {
+    id: "netQ5",
+    text: "A network is experiencing congestion. What is the BEST long-term solution?",
+    category: "configuration",
+    courseRecommendation: "Network Configuration Essentials",
+    options: {
+      a: { text: "Restart switches", points: 20 },
+      b: { text: "Implement QoS", points: 100 },
+      c: { text: "Disable VLANs", points: 0 },
+      d: { text: "Reduce number of users", points: 40 },
+    },
+  },
+  {
+    id: "netQ6",
+    text: "A device cannot obtain an IPv6 address. What should you check?",
+    category: "configuration",
     courseRecommendation: "Advanced IP Addressing and Subnetting",
-    category: "networking"
-  }
+    options: {
+      a: { text: "DHCPv4 only", points: 0 },
+      b: { text: "SLAAC/DHCPv6 configuration", points: 100 },
+      c: { text: "DNS cache", points: 20 },
+      d: { text: "Firewall logs only", points: 40 },
+    },
+  },
+  {
+    id: "netQ7",
+    text: "What is the MAIN purpose of VLANs in an enterprise network?",
+    category: "networking",
+    courseRecommendation: "Advanced IP Addressing and Subnetting",
+    options: {
+      a: { text: "Increase internet speed", points: 20 },
+      b: { text: "Network segmentation", points: 100 },
+      c: { text: "Encrypt traffic", points: 0 },
+      d: { text: "Assign MAC addresses", points: 20 },
+    },
+  },
+  {
+    id: "netQ8",
+    text: "Users report slow login to domain services. What should you investigate FIRST?",
+    category: "troubleshooting",
+    courseRecommendation: "Network Diagnostics and Troubleshooting",
+    options: {
+      a: { text: "DNS performance", points: 100 },
+      b: { text: "Monitor CPU", points: 20 },
+      c: { text: "Replace switch", points: 20 },
+      d: { text: "Reinstall OS", points: 0 },
+    },
+  },
+  {
+    id: "netQ9",
+    text: "A switch port is in 'err-disabled' state. What is the MOST likely cause?",
+    category: "hardware",
+    courseRecommendation: "Network Hardware Management",
+    options: {
+      a: { text: "DHCP failure", points: 0 },
+      b: { text: "Port security violation", points: 100 },
+      c: { text: "DNS error", points: 20 },
+      d: { text: "IPv6 misconfiguration", points: 40 },
+    },
+  },
+  {
+    id: "netQ10",
+    text: "What is the BEST practice for recurring network incidents?",
+    category: "troubleshooting",
+    courseRecommendation: "Network Diagnostics and Troubleshooting",
+    options: {
+      a: { text: "Fix each time manually", points: 40 },
+      b: { text: "Problem management (ITIL)", points: 100 },
+      c: { text: "Ignore if temporary", points: 0 },
+      d: { text: "Restart devices", points: 20 },
+    },
+  },
+  {
+    id: "netQ11",
+    text: "What tool helps verify the packet route path?",
+    category: "troubleshooting",
+    courseRecommendation: "Network Diagnostics and Troubleshooting",
+    options: {
+      a: { text: "ping", points: 40 },
+      b: { text: "traceroute", points: 100 },
+      c: { text: "nslookup", points: 20 },
+      d: { text: "ipconfig", points: 20 },
+    },
+  },
+  {
+    id: "netQ12",
+    text: "A user receives an APIPA address (169.254.x.x). What does this indicate?",
+    category: "troubleshooting",
+    courseRecommendation: "Network Troubleshooting Basics",
+    options: {
+      a: { text: "DNS failure", points: 20 },
+      b: { text: "DHCP failure", points: 100 },
+      c: { text: "Gateway failure", points: 40 },
+      d: { text: "Firewall block", points: 0 },
+    },
+  },
+  {
+    id: "netQ13",
+    text: "Which protocol ensures reliable delivery?",
+    category: "networking",
+    courseRecommendation: "Networking Fundamentals: Connectivity Types",
+    options: {
+      a: { text: "UDP", points: 20 },
+      b: { text: "TCP", points: 100 },
+      c: { text: "ICMP", points: 0 },
+      d: { text: "ARP", points: 40 },
+    },
+  },
+  {
+    id: "netQ14",
+    text: "What is the BEST approach for IT service incident handling (ITIL 4)?",
+    category: "troubleshooting",
+    courseRecommendation: "Network Diagnostics and Troubleshooting",
+    options: {
+      a: { text: "Fix quickly without logging", points: 20 },
+      b: { text: "Log → categorize → resolve", points: 100 },
+      c: { text: "Ignore minor issues", points: 0 },
+      d: { text: "Restart system only", points: 40 },
+    },
+  },
+  {
+    id: "netQ15",
+    text: "What causes an IP conflict in a network?",
+    category: "networking",
+    courseRecommendation: "IP Addressing and Subnetting",
+    options: {
+      a: { text: "Duplicate IP assignment", points: 100 },
+      b: { text: "DNS failure", points: 20 },
+      c: { text: "Switch overload", points: 40 },
+      d: { text: "Firewall rule", points: 0 },
+    },
+  },
+  {
+    id: "netQ16",
+    text: "What is NAT used for?",
+    category: "networking",
+    courseRecommendation: "Network Configuration Essentials",
+    options: {
+      a: { text: "Encrypt traffic", points: 0 },
+      b: { text: "Translate private to public IP", points: 100 },
+      c: { text: "Assign VLANs", points: 20 },
+      d: { text: "Increase bandwidth", points: 20 },
+    },
+  },
+  {
+    id: "netQ17",
+    text: "What is the BEST troubleshooting method?",
+    category: "troubleshooting",
+    courseRecommendation: "Network Diagnostics and Troubleshooting",
+    options: {
+      a: { text: "Random fixes", points: 0 },
+      b: { text: "Structured layered approach", points: 100 },
+      c: { text: "Restart everything", points: 20 },
+      d: { text: "Guessing", points: 0 },
+    },
+  },
+  {
+    id: "netQ18",
+    text: "What is the function of a default gateway?",
+    category: "networking",
+    courseRecommendation: "Introduction to Internet Technologies",
+    options: {
+      a: { text: "DNS resolution", points: 20 },
+      b: { text: "Route traffic outside the network", points: 100 },
+      c: { text: "Store MAC addresses", points: 0 },
+      d: { text: "Encrypt traffic", points: 0 },
+    },
+  },
+  {
+    id: "netQ19",
+    text: "What is the main advantage of IPv6?",
+    category: "networking",
+    courseRecommendation: "Advanced IP Addressing and Subnetting",
+    options: {
+      a: { text: "Smaller address space", points: 0 },
+      b: { text: "Larger address space", points: 100 },
+      c: { text: "No routing needed", points: 0 },
+      d: { text: "No security needed", points: 20 },
+    },
+  },
+  {
+    id: "netQ20",
+    text: "What is the best mindset for a Network Administrator?",
+    category: "troubleshooting",
+    courseRecommendation: "Network Diagnostics and Troubleshooting",
+    options: {
+      a: { text: "Reactive only", points: 20 },
+      b: { text: "Proactive and preventive", points: 100 },
+      c: { text: "Avoid responsibility", points: 0 },
+      d: { text: "Wait for escalation", points: 40 },
+    },
+  },
 ];
 
-// Cybersecurity questions (unchanged)
+// ─────────────────────────────────────────────
+// SECTION 4 — CYBERSECURITY (20 questions)
+// ITIL 4 + CCNA Security + CND + CEH + Supervisory Decision Making
+// Bank of 20, use 10 per session
+// ─────────────────────────────────────────────
 export const cybersecurityQuestions = [
   {
     id: "cyberQ1",
-    text: "Do you understand why we use passwords?",
-    courseRecommendation: "Password Security Best Practices",
-    category: "security"
+    text: "Multiple failed login attempts are detected across systems. What is your FIRST action?",
+    category: "incidentResponse",
+    courseRecommendation: "Common Cyber Threats and Attacks",
+    options: {
+      a: { text: "Ignore", points: 0 },
+      b: { text: "Correlate logs across systems", points: 100 },
+      c: { text: "Restart servers", points: 20 },
+      d: { text: "Notify users only", points: 40 },
+    },
   },
   {
     id: "cyberQ2",
-    text: "Have you ever been concerned about someone accessing your accounts without permission?",
-    courseRecommendation: "Account Security and Protection",
-    category: "security"
+    text: "A phishing email was clicked by a staff member. What should you do FIRST?",
+    category: "incidentResponse",
+    courseRecommendation: "Common Cyber Threats and Attacks",
+    options: {
+      a: { text: "Delete the email", points: 20 },
+      b: { text: "Isolate the affected device", points: 100 },
+      c: { text: "Ignore", points: 0 },
+      d: { text: "Restart the PC", points: 40 },
+    },
   },
   {
     id: "cyberQ3",
-    text: "Do you understand why using public Wi-Fi can be risky?",
-    courseRecommendation: "Network Security Fundamentals",
-    category: "security"
+    text: "What is the primary goal of the CEH (Certified Ethical Hacker) mindset?",
+    category: "threats",
+    courseRecommendation: "Introduction to Cybersecurity",
+    options: {
+      a: { text: "Attack systems", points: 0 },
+      b: { text: "Identify vulnerabilities ethically", points: 100 },
+      c: { text: "Disable firewalls", points: 0 },
+      d: { text: "Monitor users only", points: 40 },
+    },
   },
   {
     id: "cyberQ4",
-    text: "Do you know what cyber security means?",
+    text: "What is most important in incident response (ITIL)?",
+    category: "incidentResponse",
     courseRecommendation: "Introduction to Cybersecurity",
-    category: "security"
+    options: {
+      a: { text: "Speed only", points: 20 },
+      b: { text: "Containment and documentation", points: 100 },
+      c: { text: "Ignore minor issues", points: 0 },
+      d: { text: "Restart systems", points: 40 },
+    },
   },
   {
     id: "cyberQ5",
-    text: "Have you ever heard one of these (Computer Virus, Phishing, Malware)?",
-    courseRecommendation: "Common Cyber Threats and Attacks",
-    category: "threats"
+    text: "What is defense-in-depth?",
+    category: "security",
+    courseRecommendation: "Network Security Fundamentals",
+    options: {
+      a: { text: "Single firewall", points: 0 },
+      b: { text: "Multiple security layers", points: 100 },
+      c: { text: "No security", points: 0 },
+      d: { text: "Antivirus only", points: 40 },
+    },
   },
   {
     id: "cyberQ6",
-    text: "Have you heard of encryption?",
-    courseRecommendation: "Data Encryption Fundamentals",
-    category: "encryption"
+    text: "What is the primary function of an IDS?",
+    category: "security",
+    courseRecommendation: "Network Security Fundamentals",
+    options: {
+      a: { text: "Prevent attacks", points: 40 },
+      b: { text: "Detect attacks", points: 100 },
+      c: { text: "Encrypt traffic", points: 0 },
+      d: { text: "Route traffic", points: 0 },
+    },
   },
   {
     id: "cyberQ7",
-    text: "Do you know what multifactor authentication means?",
+    text: "What is the zero trust principle?",
+    category: "security",
     courseRecommendation: "Authentication Methods and Security",
-    category: "encryption"
+    options: {
+      a: { text: "Trust internal users", points: 0 },
+      b: { text: "Verify everything continuously", points: 100 },
+      c: { text: "No authentication needed", points: 0 },
+      d: { text: "Open network", points: 0 },
+    },
   },
   {
     id: "cyberQ8",
-    text: "Do you know what a secure website looks like in your browser?",
-    courseRecommendation: "Web Security Indicators",
-    category: "networking"
+    text: "A vulnerability is discovered in a production system. What is the BEST action?",
+    category: "security",
+    courseRecommendation: "Endpoint Security Fundamentals",
+    options: {
+      a: { text: "Ignore", points: 0 },
+      b: { text: "Risk assess and apply patch management", points: 100 },
+      c: { text: "Restart the system", points: 20 },
+      d: { text: "Wait for it to fail", points: 0 },
+    },
   },
   {
     id: "cyberQ9",
-    text: "Are you familiar with what DNS is?",
-    courseRecommendation: "DNS and Network Security",
-    category: "networking"
+    text: "What is the main purpose of penetration testing?",
+    category: "threats",
+    courseRecommendation: "Introduction to Cybersecurity",
+    options: {
+      a: { text: "Break systems maliciously", points: 0 },
+      b: { text: "Simulate real attacks to find weaknesses", points: 100 },
+      c: { text: "Increase system speed", points: 0 },
+      d: { text: "Monitor network traffic", points: 40 },
+    },
   },
   {
     id: "cyberQ10",
-    text: "Are you familiar with what an \"endpoint\" refers to in cybersecurity?",
+    text: "What indicates a possible data exfiltration?",
+    category: "incidentResponse",
+    courseRecommendation: "Common Cyber Threats and Attacks",
+    options: {
+      a: { text: "High CPU usage", points: 20 },
+      b: { text: "Unusual outbound traffic", points: 100 },
+      c: { text: "DNS working normally", points: 0 },
+      d: { text: "Successful logins", points: 0 },
+    },
+  },
+  {
+    id: "cyberQ11",
+    text: "What is the best response to a ransomware attack?",
+    category: "incidentResponse",
+    courseRecommendation: "Common Cyber Threats and Attacks",
+    options: {
+      a: { text: "Pay immediately", points: 0 },
+      b: { text: "Isolate affected systems", points: 100 },
+      c: { text: "Restart the system", points: 20 },
+      d: { text: "Ignore", points: 0 },
+    },
+  },
+  {
+    id: "cyberQ12",
+    text: "What is SIEM used for?",
+    category: "security",
+    courseRecommendation: "Network Security Fundamentals",
+    options: {
+      a: { text: "Store files", points: 0 },
+      b: { text: "Centralized log monitoring", points: 100 },
+      c: { text: "Routing", points: 0 },
+      d: { text: "DHCP management", points: 0 },
+    },
+  },
+  {
+    id: "cyberQ13",
+    text: "What is a social engineering attack?",
+    category: "threats",
+    courseRecommendation: "Common Cyber Threats and Attacks",
+    options: {
+      a: { text: "Technical exploit", points: 20 },
+      b: { text: "Human manipulation", points: 100 },
+      c: { text: "Firewall issue", points: 0 },
+      d: { text: "VLAN issue", points: 0 },
+    },
+  },
+  {
+    id: "cyberQ14",
+    text: "What is the goal of patch management?",
+    category: "security",
     courseRecommendation: "Endpoint Security Fundamentals",
-    category: "endpointSecurity"
-  }
+    options: {
+      a: { text: "Slow down the system", points: 0 },
+      b: { text: "Fix vulnerabilities", points: 100 },
+      c: { text: "Increase attack surface", points: 0 },
+      d: { text: "Disable updates", points: 0 },
+    },
+  },
+  {
+    id: "cyberQ15",
+    text: "What is the best way to reduce insider threats?",
+    category: "security",
+    courseRecommendation: "Account Security and Protection",
+    options: {
+      a: { text: "Ignore staff behavior", points: 0 },
+      b: { text: "Access control and monitoring", points: 100 },
+      c: { text: "Open access for everyone", points: 0 },
+      d: { text: "No logging", points: 0 },
+    },
+  },
+  {
+    id: "cyberQ16",
+    text: "What is risk management in cybersecurity?",
+    category: "security",
+    courseRecommendation: "Introduction to Cybersecurity",
+    options: {
+      a: { text: "Ignore threats", points: 0 },
+      b: { text: "Identify and mitigate risks", points: 100 },
+      c: { text: "Accept all risks", points: 20 },
+      d: { text: "Remove all users", points: 0 },
+    },
+  },
+  {
+    id: "cyberQ17",
+    text: "What is encryption used for?",
+    category: "encryption",
+    courseRecommendation: "Data Encryption Fundamentals",
+    options: {
+      a: { text: "Hide data from unauthorized access", points: 100 },
+      b: { text: "Increase speed", points: 0 },
+      c: { text: "Routing", points: 0 },
+      d: { text: "Backup", points: 20 },
+    },
+  },
+  {
+    id: "cyberQ18",
+    text: "What is the first action during a security incident?",
+    category: "incidentResponse",
+    courseRecommendation: "Introduction to Cybersecurity",
+    options: {
+      a: { text: "Panic", points: 0 },
+      b: { text: "Contain the incident", points: 100 },
+      c: { text: "Inform the public", points: 20 },
+      d: { text: "Restart all systems", points: 20 },
+    },
+  },
+  {
+    id: "cyberQ19",
+    text: "What is the main goal of ITIL in security operations?",
+    category: "security",
+    courseRecommendation: "Introduction to Cybersecurity",
+    options: {
+      a: { text: "Random fixes", points: 0 },
+      b: { text: "Structured service management", points: 100 },
+      c: { text: "No process needed", points: 0 },
+      d: { text: "Ignore incidents", points: 0 },
+    },
+  },
+  {
+    id: "cyberQ20",
+    text: "What defines a strong cybersecurity posture?",
+    category: "security",
+    courseRecommendation: "Introduction to Cybersecurity",
+    options: {
+      a: { text: "Tools only", points: 20 },
+      b: { text: "People + process + technology", points: 100 },
+      c: { text: "Firewall only", points: 40 },
+      d: { text: "Antivirus only", points: 40 },
+    },
+  },
 ];
 
-// Map role to questions set (unchanged)
+// Map role to question bank
 export const roleQuestions = {
-  "networkAdmin": networkAdminQuestions,
-  "cybersecurity": cybersecurityQuestions
+  networkAdmin: networkAdminQuestions,
+  cybersecurity: cybersecurityQuestions,
 };
-  
-// Course catalog with detailed information (unchanged)
+
+// Course catalog
 export const courseCatalog = {
   "Computer Basics 101": {
     title: "Computer Basics 101",
     description: "Learn the fundamentals of operating computers, from power functions to basic navigation.",
     duration: "4 weeks",
     difficulty: "Beginner",
-    topics: ["Computer Hardware", "Operating Systems", "File Management", "Basic Troubleshooting"]
+    topics: ["Computer Hardware", "Operating Systems", "File Management", "Basic Troubleshooting"],
   },
   "Introduction to Cybersecurity": {
     title: "Introduction to Cybersecurity",
-    description: "Understand the core concepts of cybersecurity and why it's important in today's digital world.",
+    description: "Understand the core concepts of cybersecurity, ITIL, and incident response.",
     duration: "6 weeks",
     difficulty: "Beginner",
-    topics: ["Security Principles", "Common Threats", "Basic Protection Methods", "Security Mindset"]
+    topics: ["Security Principles", "Common Threats", "Incident Response", "ITIL Basics"],
   },
   "Networking Fundamentals": {
     title: "Networking Fundamentals",
     description: "Learn how computer networks work and how data travels between devices.",
     duration: "8 weeks",
     difficulty: "Beginner",
-    topics: ["Network Types", "Network Hardware", "IP Addressing", "Network Protocols"]
+    topics: ["Network Types", "Network Hardware", "IP Addressing", "Network Protocols"],
   },
   "IP Addressing and Subnetting": {
     title: "IP Addressing and Subnetting",
-    description: "Master the concepts of IP addressing and how to implement subnetting in networks.",
+    description: "Master IP addressing concepts and implement subnetting in networks.",
     duration: "6 weeks",
     difficulty: "Intermediate",
-    topics: ["IPv4 Addressing", "Subnet Masks", "CIDR Notation", "Subnet Calculations"]
+    topics: ["IPv4 Addressing", "Subnet Masks", "CIDR Notation", "Subnet Calculations"],
   },
   "Network Diagnostics and Troubleshooting": {
     title: "Network Diagnostics and Troubleshooting",
-    description: "Learn how to diagnose and resolve common network issues using industry-standard tools.",
+    description: "Diagnose and resolve common network issues using industry-standard tools.",
     duration: "5 weeks",
     difficulty: "Intermediate",
-    topics: ["Diagnostic Tools", "Command Line Utilities", "Network Monitoring", "Problem Resolution"]
+    topics: ["Diagnostic Tools", "ITIL Incident Handling", "Layered Troubleshooting", "Problem Management"],
   },
   "Password Security Best Practices": {
     title: "Password Security Best Practices",
     description: "Learn how to create strong passwords and manage them securely.",
     duration: "3 weeks",
     difficulty: "Beginner",
-    topics: ["Password Creation", "Password Management Tools", "Multi-Factor Authentication", "Security Policies"]
+    topics: ["Password Creation", "Password Managers", "Multi-Factor Authentication", "Security Policies"],
   },
   "Common Cyber Threats and Attacks": {
     title: "Common Cyber Threats and Attacks",
-    description: "Understand the most common threats in cybersecurity and how they work.",
+    description: "Understand the most common cybersecurity threats and how to respond.",
     duration: "5 weeks",
     difficulty: "Beginner-Intermediate",
-    topics: ["Phishing", "Malware", "Social Engineering", "Ransomware", "Data Breaches"]
+    topics: ["Phishing", "Malware", "Ransomware", "Social Engineering", "Incident Response"],
   },
   "Data Encryption Fundamentals": {
     title: "Data Encryption Fundamentals",
     description: "Learn the basics of encryption and how it protects your data.",
     duration: "4 weeks",
     difficulty: "Intermediate",
-    topics: ["Encryption Concepts", "Symmetric vs Asymmetric", "TLS/SSL", "Encryption Applications"]
+    topics: ["Encryption Concepts", "Symmetric vs Asymmetric", "TLS/SSL", "VPN"],
   },
   "DNS and Network Security": {
     title: "DNS and Network Security",
     description: "Understand DNS and its role in network security.",
     duration: "4 weeks",
     difficulty: "Intermediate",
-    topics: ["DNS Fundamentals", "DNS Security Extensions", "DNS Attacks", "Secure DNS Configuration"]
+    topics: ["DNS Fundamentals", "DNS Security Extensions", "DNS Attacks", "Secure DNS Configuration"],
   },
   "Endpoint Security Fundamentals": {
     title: "Endpoint Security Fundamentals",
-    description: "Learn how to secure endpoints in your network from cyber threats.",
+    description: "Learn how to secure endpoints from cyber threats using patch management and protection tools.",
     duration: "5 weeks",
     difficulty: "Intermediate",
-    topics: ["Endpoint Protection", "Antivirus Solutions", "Device Management", "Security Policies"]
+    topics: ["Endpoint Protection", "Patch Management", "Vulnerability Management", "Security Policies"],
   },
-  // Add more courses as needed...
+  "Network Security Fundamentals": {
+    title: "Network Security Fundamentals",
+    description: "Core principles of securing networks — firewalls, IDS, SIEM, and zero trust.",
+    duration: "6 weeks",
+    difficulty: "Beginner-Intermediate",
+    topics: ["Firewalls", "IDS/IPS", "VPNs", "Zero Trust", "SIEM"],
+  },
+  "Authentication Methods and Security": {
+    title: "Authentication Methods and Security",
+    description: "Explore modern authentication methods including zero trust and MFA.",
+    duration: "4 weeks",
+    difficulty: "Intermediate",
+    topics: ["Passwords", "MFA", "Zero Trust", "SSO and OAuth"],
+  },
+  "Account Security and Protection": {
+    title: "Account Security and Protection",
+    description: "Protect user accounts and reduce insider threats with access control.",
+    duration: "3 weeks",
+    difficulty: "Beginner",
+    topics: ["Access Control", "Least Privilege", "Insider Threats", "Monitoring"],
+  },
+  "Software Installation and Management": {
+    title: "Software Installation and Management",
+    description: "Learn to install, update, and manage software safely.",
+    duration: "3 weeks",
+    difficulty: "Beginner",
+    topics: ["Installation Processes", "Software Updates", "License Management"],
+  },
+  "Troubleshooting Computer Problems": {
+    title: "Troubleshooting Computer Problems",
+    description: "Develop systematic skills to diagnose and resolve common computer issues.",
+    duration: "4 weeks",
+    difficulty: "Beginner",
+    topics: ["Systematic Diagnosis", "Common Errors", "Performance Issues", "Recovery Options"],
+  },
+  "Network Hardware Fundamentals": {
+    title: "Network Hardware Fundamentals",
+    description: "Understand routers, switches, hubs and other network hardware.",
+    duration: "4 weeks",
+    difficulty: "Beginner",
+    topics: ["Routers", "Switches", "Hubs", "Cables and Connectors"],
+  },
+  "Network Hardware Management": {
+    title: "Network Hardware Management",
+    description: "Manage and maintain network hardware for optimal performance.",
+    duration: "5 weeks",
+    difficulty: "Intermediate",
+    topics: ["Switch Port Security", "Firmware Updates", "Performance Monitoring", "Fault Management"],
+  },
+  "Network Troubleshooting Basics": {
+    title: "Network Troubleshooting Basics",
+    description: "Identify and resolve common network connectivity issues.",
+    duration: "4 weeks",
+    difficulty: "Beginner-Intermediate",
+    topics: ["APIPA", "DHCP Issues", "IP Conflicts", "Wi-Fi Troubleshooting"],
+  },
+  "Network Configuration Essentials": {
+    title: "Network Configuration Essentials",
+    description: "Configure network devices and services including DHCP, QoS, and NAT.",
+    duration: "6 weeks",
+    difficulty: "Intermediate",
+    topics: ["DHCP Setup", "NAT Configuration", "QoS", "Router Settings"],
+  },
+  "Networking Fundamentals: Connectivity Types": {
+    title: "Networking Fundamentals: Connectivity Types",
+    description: "Explore wired vs wireless, TCP/UDP, bandwidth, latency, and MAC addresses.",
+    duration: "4 weeks",
+    difficulty: "Beginner",
+    topics: ["Wired vs Wireless", "TCP vs UDP", "Bandwidth and Latency", "MAC Addressing"],
+  },
+  "Introduction to Internet Technologies": {
+    title: "Introduction to Internet Technologies",
+    description: "Understand how the internet works — IP, DNS, HTTP, and default gateways.",
+    duration: "5 weeks",
+    difficulty: "Beginner",
+    topics: ["How the Internet Works", "IP Addressing", "DNS", "HTTP/HTTPS"],
+  },
+  "Advanced IP Addressing and Subnetting": {
+    title: "Advanced IP Addressing and Subnetting",
+    description: "Advanced networking — VLANs, IPv6, SLAAC, and network segmentation.",
+    duration: "8 weeks",
+    difficulty: "Intermediate",
+    topics: ["VLANs", "IPv6 and SLAAC", "DHCPv6", "Network Design"],
+  },
+  "IT Workflow and Planning": {
+    title: "IT Workflow and Planning",
+    description: "Build the problem-solving, decision-making, and workplace skills every IT professional needs.",
+    duration: "4 weeks",
+    difficulty: "Beginner",
+    topics: ["Task Prioritization", "Root Cause Analysis", "Workplace Behaviour", "ITIL Basics"],
+  },
+  "Computer Hardware Fundamentals": {
+    title: "Computer Hardware Fundamentals",
+    description: "Understand CPU, RAM, SSD/HDD, and core computer components.",
+    duration: "4 weeks",
+    difficulty: "Beginner",
+    topics: ["CPU and RAM", "Storage Types", "Peripherals", "Hardware Troubleshooting"],
+  },
 };
