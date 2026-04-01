@@ -132,7 +132,7 @@ export default function Footer() {
           
           <div className="border-t border-blue-600 mt-6 pt-4 text-center">
             <p className="text-blue-100 text-sm">
-              © {currentYear} ITEL - TIRA. All rights reserved.
+              © {currentYear} ITEL - TIRA. All rights reserved
             </p>
           </div>
         </div>
