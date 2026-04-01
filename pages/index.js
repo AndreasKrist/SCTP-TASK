@@ -87,7 +87,7 @@ export default function Home() {
   return (
     <Layout>
       <Head>
-        <title>Prelim Tech Skills Assessor</title>
+        <title>Tech Industry Readiness Assessor - TIRA</title>
         <meta name="description" content="Discover your potential IT career path and get personalized course recommendations." />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href="/images/itel-logo.png" />
@@ -108,8 +108,8 @@ export default function Home() {
               transition={{ delay: 0.2, duration: 0.7 }}
             >
               <span className="relative inline-block">
-                <span className="block sm:inline">PTSA: Prelim Tech </span>
-                <span className="block sm:inline">Skills Assessor</span>
+                <span className="block sm:inline">TIRA: Tech Industry </span>
+                <span className="block sm:inline">Readiness Assessor</span>
                 <motion.span 
                   className="absolute -bottom-2 left-0 w-full h-1 bg-blue-500"
                   initial={{ width: 0 }}
@@ -126,7 +126,7 @@ export default function Home() {
               transition={{ delay: 0.4, duration: 0.7 }}
             >
               {/* Unlock Your IT Potential with Personalized Course Recommendations. */}
-              Explore Your IT Know-How with the PTSA
+              Explore Your IT Know-How with TIRA
             </motion.p>
           </div>
           
@@ -145,7 +145,7 @@ export default function Home() {
                 transition={{ delay: 0.8, duration: 0.5 }}
               >
                 <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-blue-900">
-                  Welcome to ITEL&apos;s PTSA: Prelim Tech Skills Assessor! 👋
+                  Welcome to ITEL&apos;s TIRA: Tech Industry Readiness Assessor! 👋
                 </h2>
                 <p className="text-base sm:text-lg text-blue-700 mb-4">
                   {/* This assessment helps you discover your potential in Tech and provides personalized course recommendations to boost your career. */}

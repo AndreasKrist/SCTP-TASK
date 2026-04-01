@@ -1,181 +1,448 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Layout from '../components/layout/Layout';
-import { getSavedUsers } from '../lib/saveUserData';
 import Button from '../components/ui/Button';
+import { auth, db } from '../lib/firebase';
+import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
+import { collection, query, orderBy, getDocs } from 'firebase/firestore';
+import { aptitudeQuestions, generalQuestions, roleQuestions } from '../data/questions';
+import { generateReportPdf } from '../lib/generateReportPdf';
+
+const OPTION_LABELS = ['a', 'b', 'c', 'd'];
+
+// Build a lookup map: questionId → question object
+const allQuestionsMap = {};
+[...aptitudeQuestions, ...generalQuestions, ...roleQuestions.networkAdmin, ...roleQuestions.cybersecurity].forEach(q => {
+  allQuestionsMap[q.id] = q;
+});
 
 export default function Admin() {
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [loggingIn, setLoggingIn] = useState(false);
+
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  
+  const [openAnswerSection, setOpenAnswerSection] = useState(null);
+
+  // Listen to auth state
   useEffect(() => {
-    // Load saved users when the component mounts
-    const loadUsers = () => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setAuthLoading(false);
+    });
+    return unsubscribe;
+  }, []);
+
+  // Fetch assessments when logged in
+  useEffect(() => {
+    if (!user) return;
+    const fetchData = async () => {
       setLoading(true);
-      const savedUsers = getSavedUsers();
-      setUsers(savedUsers);
+      try {
+        const q = query(collection(db, 'assessments'), orderBy('timestamp', 'desc'));
+        const snapshot = await getDocs(q);
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setUsers(data);
+      } catch (err) {
+        console.error('Error fetching assessments:', err);
+      }
       setLoading(false);
     };
-    
-    loadUsers();
-  }, []);
-  
-  const handleUserSelect = (user) => {
-    setSelectedUser(user);
+    fetchData();
+  }, [user]);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoginError('');
+    setLoggingIn(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      setLoginError('Invalid email or password');
+    }
+    setLoggingIn(false);
   };
-  
-  const handleBack = () => {
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    setUsers([]);
     setSelectedUser(null);
   };
-  
+
   const handleExport = () => {
-    // Create a JSON string of all user data
     const dataStr = JSON.stringify(users, null, 2);
-    
-    // Create a blob and download link
     const blob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
-    // Create a temporary link and trigger download
     const a = document.createElement('a');
     a.href = url;
     a.download = 'assessment_results.json';
     document.body.appendChild(a);
     a.click();
-    
-    // Clean up
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
-  
+
+  const formatDuration = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    if (mins === 0) return `${secs}s`;
+    return `${mins}m ${secs}s`;
+  };
+
+  const formatDate = (timestamp) => {
+    if (!timestamp) return 'N/A';
+    // Firestore Timestamp has toDate(), plain Date string needs new Date()
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleString();
+  };
+
+  const formatDateShort = (timestamp) => {
+    if (!timestamp) return 'N/A';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleDateString();
+  };
+
+  // Auth loading
+  if (authLoading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <p className="text-blue-600 text-lg">Loading...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Login screen
+  if (!user) {
+    return (
+      <Layout>
+        <Head>
+          <title>Admin Login | TIRA</title>
+        </Head>
+        <div className="flex items-center justify-center min-h-[60vh] px-4">
+          <div className="w-full max-w-sm bg-white rounded-xl shadow-lg border border-blue-100 p-6 sm:p-8">
+            <h1 className="text-2xl font-bold text-blue-800 mb-6 text-center">Admin Login</h1>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-blue-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-blue-800"
+                  placeholder="admin@example.com"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-blue-700 mb-1">Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-blue-800"
+                  placeholder="Enter password"
+                />
+              </div>
+              {loginError && (
+                <p className="text-red-600 text-sm text-center">{loginError}</p>
+              )}
+              <button
+                type="submit"
+                disabled={loggingIn}
+                className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                {loggingIn ? 'Logging in...' : 'Log In'}
+              </button>
+            </form>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Admin dashboard (authenticated)
   return (
     <Layout>
       <Head>
-        <title>Admin | IT Career Assessment</title>
-        <meta name="description" content="Admin panel for IT Career Assessment" />
+        <title>Admin | TIRA</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
-      
+
       <div className="container mx-auto px-4 py-6 sm:py-12">
         <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-blue-100">
           <div className="p-4 sm:p-6 lg:p-8">
-            <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-blue-800">Assessment Results</h1>
-            
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+              <h1 className="text-2xl sm:text-3xl font-bold text-blue-800">Assessment Results</h1>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+              >
+                Log Out
+              </button>
+            </div>
+
             {loading ? (
               <div className="text-center py-8">
-                <p className="text-blue-600">Loading...</p>
+                <p className="text-blue-600">Loading assessments...</p>
               </div>
             ) : selectedUser ? (
               <div>
-                <Button 
-                  variant="secondary" 
-                  onClick={handleBack}
-                  className="mb-6 w-full sm:w-auto"
-                >
-                  ← Back to List
-                </Button>
-                
+                <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                  <Button
+                    variant="secondary"
+                    onClick={() => { setSelectedUser(null); setOpenAnswerSection(null); }}
+                    className="w-full sm:w-auto"
+                  >
+                    &larr; Back to List
+                  </Button>
+                  <button
+                    onClick={() => generateReportPdf(selectedUser, allQuestionsMap)}
+                    className="flex items-center justify-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Download PDF Report
+                  </button>
+                </div>
+
                 <div className="mb-6">
                   <h2 className="text-lg sm:text-xl font-semibold mb-4 text-blue-800">User Information</h2>
                   <div className="space-y-3 bg-blue-50 p-4 rounded-lg">
                     <div className="flex flex-col sm:flex-row sm:items-center">
-                      <span className="font-medium text-blue-800 w-full sm:w-20">Name:</span>
+                      <span className="font-medium text-blue-800 w-full sm:w-24">Name:</span>
                       <span className="text-blue-700">{selectedUser.fullName}</span>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center">
-                      <span className="font-medium text-blue-800 w-full sm:w-20">Email:</span>
+                      <span className="font-medium text-blue-800 w-full sm:w-24">Email:</span>
                       <span className="text-blue-700 break-all">{selectedUser.email}</span>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center">
-                      <span className="font-medium text-blue-800 w-full sm:w-20">Phone:</span>
+                      <span className="font-medium text-blue-800 w-full sm:w-24">Phone:</span>
                       <span className="text-blue-700">{selectedUser.phone}</span>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center">
-                      <span className="font-medium text-blue-800 w-full sm:w-20">Date:</span>
-                      <span className="text-blue-700">{new Date(selectedUser.timestamp).toLocaleString()}</span>
+                      <span className="font-medium text-blue-800 w-full sm:w-24">Age Group:</span>
+                      <span className="text-blue-700">{selectedUser.ageGroup}</span>
                     </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center">
+                      <span className="font-medium text-blue-800 w-full sm:w-24">Consultant:</span>
+                      <span className="text-blue-700">{selectedUser.consultant}</span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center">
+                      <span className="font-medium text-blue-800 w-full sm:w-24">Date:</span>
+                      <span className="text-blue-700">{formatDate(selectedUser.timestamp)}</span>
+                    </div>
+                    {selectedUser.durationSeconds && (
+                      <div className="flex flex-col sm:flex-row sm:items-center">
+                        <span className="font-medium text-blue-800 w-full sm:w-24">Duration:</span>
+                        <span className="text-blue-700">{formatDuration(selectedUser.durationSeconds)}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-                
-                {selectedUser.results && (
-                  <div>
-                    <h2 className="text-lg sm:text-xl font-semibold mb-4 text-blue-800">Assessment Results</h2>
-                    <div className="mb-4 p-4 bg-blue-50 rounded-lg">
-                      <div className="flex flex-col sm:flex-row sm:items-center mb-2">
-                        <span className="font-medium text-blue-800 w-full sm:w-24">Role:</span>
-                        <span className="text-blue-700">{selectedUser.results.roleName}</span>
-                      </div>
-                      <div className="flex flex-col sm:flex-row sm:items-center">
-                        <span className="font-medium text-blue-800 w-full sm:w-24">Success Rate:</span>
-                        <span className={`font-bold text-lg ${
-                          selectedUser.results.successRate >= 90 ? 'text-green-600' :
-                          selectedUser.results.successRate >= 75 ? 'text-blue-600' :
-                          selectedUser.results.successRate >= 60 ? 'text-yellow-600' :
-                          'text-red-600'
-                        }`}>
-                          {selectedUser.results.successRate}%
-                        </span>
-                      </div>
+
+                <div>
+                  <h2 className="text-lg sm:text-xl font-semibold mb-4 text-blue-800">Assessment Results</h2>
+                  <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center mb-2">
+                      <span className="font-medium text-blue-800 w-full sm:w-24">Role:</span>
+                      <span className="text-blue-700">{selectedUser.roleName}</span>
                     </div>
-                    
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-                      <div className="p-4 border border-blue-200 rounded-lg bg-white">
-                        <h3 className="font-medium mb-2 text-green-600">Strengths</h3>
-                        {selectedUser.results.strengths.length > 0 ? (
-                          <ul className="list-disc list-inside space-y-1">
-                            {selectedUser.results.strengths.map((strength, i) => (
-                              <li key={i} className="capitalize text-blue-700 text-sm sm:text-base break-words">
-                                {strength.replace(/([A-Z])/g, ' $1').trim()}
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-sm text-blue-500 italic">No strengths identified</p>
-                        )}
-                      </div>
-                      
-                      <div className="p-4 border border-blue-200 rounded-lg bg-white">
-                        <h3 className="font-medium mb-2 text-blue-600">Areas for Improvement</h3>
-                        {selectedUser.results.weaknesses.length > 0 ? (
-                          <ul className="list-disc list-inside space-y-1">
-                            {selectedUser.results.weaknesses.map((weakness, i) => (
-                              <li key={i} className="capitalize text-blue-700 text-sm sm:text-base break-words">
-                                {weakness.replace(/([A-Z])/g, ' $1').trim()}
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-sm text-blue-500 italic">No areas for improvement identified</p>
-                        )}
-                      </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center mb-2">
+                      <span className="font-medium text-blue-800 w-full sm:w-24">Overall:</span>
+                      <span className={`font-bold text-lg ${
+                        selectedUser.successRate >= 90 ? 'text-green-600' :
+                        selectedUser.successRate >= 75 ? 'text-blue-600' :
+                        selectedUser.successRate >= 60 ? 'text-yellow-600' :
+                        'text-red-600'
+                      }`}>
+                        {selectedUser.successRate}%
+                      </span>
                     </div>
-                    
-                    <div className="bg-white border border-blue-200 rounded-lg p-4">
-                      <h3 className="font-medium mb-2 text-blue-800">Recommended Courses</h3>
-                      {selectedUser.results.recommendations.length > 0 ? (
+                    {selectedUser.sectionScores && (
+                      <div className="space-y-1 mt-3 pt-3 border-t border-blue-200">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-blue-700">Aptitude (50%)</span>
+                          <span className="font-medium text-blue-800">{selectedUser.sectionScores.aptitude}%</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-blue-700">General IT (25%)</span>
+                          <span className="font-medium text-blue-800">{selectedUser.sectionScores.general}%</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-blue-700">Role-Specific (25%)</span>
+                          <span className="font-medium text-blue-800">{selectedUser.sectionScores.roleSpecific}%</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                    <div className="p-4 border border-blue-200 rounded-lg bg-white">
+                      <h3 className="font-medium mb-2 text-green-600">Strengths</h3>
+                      {selectedUser.strengths?.length > 0 ? (
                         <ul className="list-disc list-inside space-y-1">
-                          {selectedUser.results.recommendations.map((course, i) => (
-                            <li key={i} className="text-blue-700 text-sm sm:text-base break-words">{course}</li>
+                          {selectedUser.strengths.map((s, i) => (
+                            <li key={i} className="capitalize text-blue-700 text-sm sm:text-base break-words">
+                              {s.replace(/([A-Z])/g, ' $1').trim()}
+                            </li>
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-sm text-blue-500 italic">No course recommendations</p>
+                        <p className="text-sm text-blue-500 italic">No strengths identified</p>
+                      )}
+                    </div>
+
+                    <div className="p-4 border border-blue-200 rounded-lg bg-white">
+                      <h3 className="font-medium mb-2 text-blue-600">Areas for Improvement</h3>
+                      {selectedUser.weaknesses?.length > 0 ? (
+                        <ul className="list-disc list-inside space-y-1">
+                          {selectedUser.weaknesses.map((w, i) => (
+                            <li key={i} className="capitalize text-blue-700 text-sm sm:text-base break-words">
+                              {w.replace(/([A-Z])/g, ' $1').trim()}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-sm text-blue-500 italic">No areas for improvement identified</p>
                       )}
                     </div>
                   </div>
-                )}
+
+                  <div className="bg-white border border-blue-200 rounded-lg p-4 mb-6">
+                    <h3 className="font-medium mb-2 text-blue-800">Recommended Courses</h3>
+                    {selectedUser.recommendations?.length > 0 ? (
+                      <ul className="list-disc list-inside space-y-1">
+                        {selectedUser.recommendations.map((course, i) => (
+                          <li key={i} className="text-blue-700 text-sm sm:text-base break-words">{course}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-sm text-blue-500 italic">No course recommendations</p>
+                    )}
+                  </div>
+
+                  {/* Answer Review */}
+                  {selectedUser.answers && selectedUser.questionIds && (
+                    <div>
+                      <h2 className="text-lg sm:text-xl font-semibold mb-4 text-blue-800">Answer Review</h2>
+                      <div className="space-y-3">
+                        {[
+                          { key: 'aptitude', label: 'Aptitude' },
+                          { key: 'general', label: 'General IT' },
+                          { key: 'roleSpecific', label: selectedUser.roleName || 'Role-Specific' },
+                        ].map(({ key, label }) => {
+                          const qIds = selectedUser.questionIds[key] || [];
+                          const sectionAnswers = selectedUser.answers[key] || {};
+                          if (qIds.length === 0) return null;
+
+                          return (
+                            <div key={key} className="border border-blue-200 rounded-lg overflow-hidden">
+                              <button
+                                onClick={() => setOpenAnswerSection(prev => prev === key ? null : key)}
+                                className="w-full flex justify-between items-center px-5 py-4 bg-blue-50 hover:bg-blue-100 transition-colors text-left"
+                              >
+                                <span className="font-medium text-blue-800">{label}</span>
+                                <svg
+                                  className={`w-5 h-5 text-blue-500 transition-transform duration-200 ${openAnswerSection === key ? 'rotate-180' : ''}`}
+                                  fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                >
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </button>
+
+                              {openAnswerSection === key && (
+                                <div className="p-4 space-y-4">
+                                  {qIds.map((qId, idx) => {
+                                    const q = allQuestionsMap[qId];
+                                    if (!q) return (
+                                      <div key={qId} className="text-sm text-blue-400 italic">Question {qId} not found</div>
+                                    );
+
+                                    const userAnswer = sectionAnswers[qId];
+                                    const bestKey = OPTION_LABELS.reduce((best, k) =>
+                                      q.options[k].points > q.options[best].points ? k : best
+                                    , 'a');
+                                    const userPoints = userAnswer && q.options[userAnswer] ? q.options[userAnswer].points : 0;
+                                    const bestPoints = q.options[bestKey].points;
+
+                                    const scoreColor =
+                                      userPoints >= bestPoints ? 'text-green-600' :
+                                      userPoints >= 50 ? 'text-amber-600' :
+                                      'text-red-500';
+
+                                    return (
+                                      <div key={qId} className="rounded-lg border border-blue-100 p-4">
+                                        <p className="text-sm font-medium text-blue-800 mb-3">
+                                          {idx + 1}. {q.text}
+                                        </p>
+                                        <div className="space-y-1.5">
+                                          {OPTION_LABELS.map(k => {
+                                            const opt = q.options[k];
+                                            const isUser = k === userAnswer;
+                                            const isBest = k === bestKey;
+
+                                            let bg = 'bg-white border-blue-100';
+                                            if (isBest && isUser) bg = 'bg-green-50 border-green-300';
+                                            else if (isBest) bg = 'bg-green-50 border-green-200';
+                                            else if (isUser) bg = userPoints >= 50 ? 'bg-amber-50 border-amber-300' : 'bg-red-50 border-red-300';
+
+                                            return (
+                                              <div key={k} className={`flex items-start gap-2 px-3 py-2 rounded-lg border text-sm ${bg}`}>
+                                                <span className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center text-xs font-bold mt-0.5 ${
+                                                  isBest ? 'border-green-500 text-green-600' :
+                                                  isUser ? (userPoints >= 50 ? 'border-amber-400 text-amber-500' : 'border-red-400 text-red-500') :
+                                                  'border-blue-300 text-blue-500'
+                                                }`}>
+                                                  {k.toUpperCase()}
+                                                </span>
+                                                <span className="flex-1 text-blue-800">{opt.text}</span>
+                                                <div className="flex items-center gap-2 flex-shrink-0">
+                                                  <span className="text-xs text-blue-400">{opt.points}pts</span>
+                                                  {isUser && <span className="text-xs font-medium text-blue-600">User</span>}
+                                                  {isBest && <span className="text-xs font-medium text-green-600">Best</span>}
+                                                </div>
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                        <div className="mt-2">
+                                          <span className={`text-xs font-medium ${scoreColor}`}>
+                                            {userPoints}/{bestPoints} pts
+                                            {userPoints >= bestPoints && ' — Best answer!'}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             ) : users.length > 0 ? (
               <div>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
-                  <p className="text-blue-600 text-base sm:text-lg font-medium">{users.length} user(s) found</p>
+                  <p className="text-blue-600 text-base sm:text-lg font-medium">{users.length} assessment(s) found</p>
                   <Button onClick={handleExport} className="w-full sm:w-auto px-6 py-3">Export Data</Button>
                 </div>
-                
-                {/* Mobile-optimized table */}
+
+                {/* Desktop Table */}
                 <div className="bg-white rounded-lg shadow-sm border border-blue-100 overflow-hidden">
-                  {/* Desktop Table */}
                   <div className="hidden md:block overflow-x-auto">
                     <table className="min-w-full">
                       <thead className="bg-blue-50">
@@ -184,36 +451,36 @@ export default function Admin() {
                           <th className="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wider">Email</th>
                           <th className="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wider">Role</th>
                           <th className="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wider">Score</th>
+                          <th className="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wider">Duration</th>
                           <th className="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wider">Date</th>
                           <th className="px-6 py-4 text-left text-sm font-semibold text-blue-800 uppercase tracking-wider">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-blue-100">
-                        {users.map((user, index) => (
-                          <tr key={index} className="hover:bg-blue-50 transition-colors duration-200">
-                            <td className="px-6 py-4 whitespace-nowrap text-blue-800 font-medium">{user.fullName}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-blue-700">{user.email}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-blue-700">{user.results?.roleName || 'N/A'}</td>
+                        {users.map((u) => (
+                          <tr key={u.id} className="hover:bg-blue-50 transition-colors duration-200">
+                            <td className="px-6 py-4 whitespace-nowrap text-blue-800 font-medium">{u.fullName}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-blue-700">{u.email}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-blue-700">{u.roleName || 'N/A'}</td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              {user.results ? (
-                                <span className={`font-bold text-lg ${
-                                  user.results.successRate >= 90 ? 'text-green-600' :
-                                  user.results.successRate >= 75 ? 'text-blue-600' :
-                                  user.results.successRate >= 60 ? 'text-yellow-600' :
-                                  'text-red-600'
-                                }`}>
-                                  {user.results.successRate}%
-                                </span>
-                              ) : (
-                                <span className="text-blue-500">N/A</span>
-                              )}
+                              <span className={`font-bold text-lg ${
+                                u.successRate >= 90 ? 'text-green-600' :
+                                u.successRate >= 75 ? 'text-blue-600' :
+                                u.successRate >= 60 ? 'text-yellow-600' :
+                                'text-red-600'
+                              }`}>
+                                {u.successRate}%
+                              </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-blue-700">
-                              {new Date(user.timestamp).toLocaleDateString()}
+                              {u.durationSeconds ? formatDuration(u.durationSeconds) : '—'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-blue-700">
+                              {formatDateShort(u.timestamp)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <button
-                                onClick={() => handleUserSelect(user)}
+                                onClick={() => setSelectedUser(u)}
                                 className="text-blue-600 hover:text-blue-800 font-medium px-3 py-1 rounded-md hover:bg-blue-50 transition-colors duration-200"
                               >
                                 View Details
@@ -227,34 +494,29 @@ export default function Admin() {
 
                   {/* Mobile Cards */}
                   <div className="md:hidden">
-                    {users.map((user, index) => (
-                      <div key={index} className="border-b border-blue-100 p-4 last:border-b-0">
+                    {users.map((u) => (
+                      <div key={u.id} className="border-b border-blue-100 p-4 last:border-b-0">
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-medium text-blue-800 truncate">{user.fullName}</h3>
-                            <p className="text-sm text-blue-600 truncate">{user.email}</p>
+                            <h3 className="font-medium text-blue-800 truncate">{u.fullName}</h3>
+                            <p className="text-sm text-blue-600 truncate">{u.email}</p>
                           </div>
-                          {user.results && (
-                            <span className={`ml-2 font-bold text-lg ${
-                              user.results.successRate >= 90 ? 'text-green-600' :
-                              user.results.successRate >= 75 ? 'text-blue-600' :
-                              user.results.successRate >= 60 ? 'text-yellow-600' :
-                              'text-red-600'
-                            }`}>
-                              {user.results.successRate}%
-                            </span>
-                          )}
+                          <span className={`ml-2 font-bold text-lg ${
+                            u.successRate >= 90 ? 'text-green-600' :
+                            u.successRate >= 75 ? 'text-blue-600' :
+                            u.successRate >= 60 ? 'text-yellow-600' :
+                            'text-red-600'
+                          }`}>
+                            {u.successRate}%
+                          </span>
                         </div>
-                        
                         <div className="flex justify-between items-center text-sm text-blue-700">
                           <div>
-                            <span className="block">{user.results?.roleName || 'N/A'}</span>
-                            <span className="text-xs text-blue-500">
-                              {new Date(user.timestamp).toLocaleDateString()}
-                            </span>
+                            <span className="block">{u.roleName || 'N/A'}</span>
+                            <span className="text-xs text-blue-500">{formatDateShort(u.timestamp)}</span>
                           </div>
                           <button
-                            onClick={() => handleUserSelect(user)}
+                            onClick={() => setSelectedUser(u)}
                             className="px-3 py-2 text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors font-medium min-h-[40px]"
                           >
                             View Details
@@ -267,9 +529,9 @@ export default function Admin() {
               </div>
             ) : (
               <div className="text-center py-8 bg-blue-50 rounded-lg">
-                <p className="text-blue-600 text-base sm:text-lg">No saved results found.</p>
+                <p className="text-blue-600 text-base sm:text-lg">No assessments found.</p>
                 <p className="mt-2 text-xs sm:text-sm text-blue-500">
-                  Users will appear here after they save their assessment results.
+                  Results will appear here after users complete their assessments.
                 </p>
               </div>
             )}

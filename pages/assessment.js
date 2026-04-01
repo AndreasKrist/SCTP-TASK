@@ -41,7 +41,7 @@ export default function Assessment() {
   return (
     <Layout>
       <Head>
-        <title>Assessment | IT Career Assessment</title>
+        <title>Assessment | TIRA</title>
         <meta name="description" content="Take your IT career assessment to discover your potential." />
       </Head>
       

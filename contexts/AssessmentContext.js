@@ -59,6 +59,9 @@ export function AssessmentProvider({ children }) {
     weaknesses: [],
   });
 
+  // Timer: tracks when questions start
+  const [assessmentStartTime, setAssessmentStartTime] = useState(null);
+
   const updateBiodata = (data) => {
     setBiodata(prev => ({ ...prev, ...data }));
   };
@@ -114,6 +117,7 @@ export function AssessmentProvider({ children }) {
       case 'roleSelection':
         // Role has been chosen — initialize random questions then proceed
         initializeSessionQuestions(selectedRole);
+        setAssessmentStartTime(Date.now());
         setStage('aptitudeQuestions');
         setCurrentQuestionSet('aptitude');
         setCurrentBatch(0);
@@ -300,12 +304,14 @@ export function AssessmentProvider({ children }) {
     setSessionQuestions({ aptitude: [], general: [], roleSpecific: [] });
     setAnswers({ aptitude: {}, general: {}, roleSpecific: {} });
     setResults({ successRate: 0, sectionScores: { aptitude: 0, general: 0, roleSpecific: 0 }, recommendations: [], strengths: [], weaknesses: [] });
+    setAssessmentStartTime(null);
   };
 
   const switchRole = (newRole) => {
     setSelectedRole(newRole);
     initializeSessionQuestions(newRole);
     setAnswers({ aptitude: {}, general: {}, roleSpecific: {} });
+    setAssessmentStartTime(Date.now());
     setStage('aptitudeQuestions');
     setCurrentQuestionSet('aptitude');
     setCurrentBatch(0);
@@ -362,6 +368,7 @@ export function AssessmentProvider({ children }) {
     getBatchProgress,
     getRoleName,
     calculateResults,
+    assessmentStartTime,
   };
 
   return (

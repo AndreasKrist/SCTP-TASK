@@ -51,7 +51,7 @@ export default function Header() {
               />
             </motion.div>
             <span className="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-700 to-blue-500 bg-clip-text text-transparent">
-              ITEL - PTSA
+              ITEL - TIRA
             </span>
           </motion.div>
         </Link>

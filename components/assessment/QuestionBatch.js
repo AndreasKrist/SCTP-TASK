@@ -3,8 +3,7 @@ import { useAssessment } from '../../contexts/AssessmentContext';
 import Button from '../ui/Button';
 import ProgressBar from './ProgressBar';
 import { useRouter } from 'next/router';
-import { saveUserData } from '../../lib/saveUserData';
-import { saveToGoogleSheet } from '../../lib/googleSheets';
+import { saveAssessment } from '../../lib/saveAssessment';
 
 const OPTION_LABELS = ['a', 'b', 'c', 'd'];
 
@@ -23,6 +22,8 @@ export default function QuestionBatch() {
     resetAssessment,
     biodata,
     calculateResults,
+    sessionQuestions,
+    assessmentStartTime,
   } = useAssessment();
 
   const questions = getCurrentBatch();
@@ -80,40 +81,30 @@ export default function QuestionBatch() {
 
     if (isFinalBatch()) {
       setIsSaving(true);
-      setTimeout(() => {
-        try {
-          const calculatedResults = calculateResults();
+      try {
+        const calculatedResults = calculateResults();
 
-          setTimeout(async () => {
-            try {
-              const roleNames = { networkAdmin: 'Network Administrator', cybersecurity: 'Cybersecurity' };
-              const resultsForSaving = {
-                role: selectedRole,
-                roleName: roleNames[selectedRole],
-                successRate: calculatedResults.successRate,
-                strengths: calculatedResults.strengths,
-                weaknesses: calculatedResults.weaknesses,
-                recommendations: calculatedResults.recommendations.map(r =>
-                  typeof r === 'string' ? r : r.courseName
-                ),
-              };
-              await saveUserData(biodata, resultsForSaving);
-              await saveToGoogleSheet({ ...biodata, results: resultsForSaving });
-            } catch (err) {
-              console.error('Background save error:', err);
-            }
-          }, 100);
+        // Fire-and-forget — save to Firebase in background, don't block navigation
+        const durationSeconds = assessmentStartTime
+          ? Math.round((Date.now() - assessmentStartTime) / 1000)
+          : null;
 
-          setTimeout(() => {
-            setIsSaving(false);
-            nextStage();
-          }, 300);
-        } catch (err) {
-          console.error('Error on final batch:', err);
-          setIsSaving(false);
-          nextStage();
-        }
-      }, 200);
+        saveAssessment({
+          biodata,
+          selectedRole,
+          results: calculatedResults,
+          sessionQuestions,
+          answers,
+          durationSeconds,
+        }).catch(err => console.error('Firebase save error:', err));
+
+        setIsSaving(false);
+        nextStage();
+      } catch (err) {
+        console.error('Error on final batch:', err);
+        setIsSaving(false);
+        nextStage();
+      }
     } else {
       setBatchAnswers({});
       nextStage();

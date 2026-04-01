@@ -44,7 +44,7 @@ export default function Footer() {
                   />
                 </div>
                 <span className="text-lg font-bold text-white">
-                  Prelim Tech Skills Assessor
+                  Tech Industry Readiness Assessor
                 </span>
               </motion.div>
               <p className="text-blue-100 text-sm">
@@ -132,7 +132,7 @@ export default function Footer() {
           
           <div className="border-t border-blue-600 mt-6 pt-4 text-center">
             <p className="text-blue-100 text-sm">
-              © {currentYear} ITEL - PTSA. All rights reserved.
+              © {currentYear} ITEL - TIRA. All rights reserved.
             </p>
           </div>
         </div>

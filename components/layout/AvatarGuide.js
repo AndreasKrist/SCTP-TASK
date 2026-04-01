@@ -17,9 +17,9 @@ export default function AvatarGuide() {
   const autoHideTimerRef = useRef(null);
   
   // Helper function to create button-like styling in messages
-  const createButtonText = (text) => {
+  const createButtonText = useCallback((text) => {
     return `<span style="display: inline-block; background: #2563eb; color: white; padding: 4px 12px; border-radius: 8px; font-weight: 500; font-size: 14px;">${text}</span>`;
-  };
+  }, []);
   
   // Get help message when user is inactive
   const getHelpMessage = useCallback(() => {
@@ -121,7 +121,7 @@ export default function AvatarGuide() {
     
     if (router.pathname === '/') {
       setAvatarExpression('welcoming');
-      return `Hello ${firstName}! 👋 Welcome to ITEL's PTSA: Prelim Tech Skills Assessor! I'm your virtual assistant and I'll help you every step of the way. 
+      return `Hello ${firstName}! 👋 Welcome to ITEL's TIRA: Tech Industry Readiness Assessor! I'm your virtual assistant and I'll help you every step of the way. 
 
 🎯 <b>What to do now: </b>
 Click the ${createButtonText('Start Assessment')} button below to begin discovering your IT potential! 

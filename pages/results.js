@@ -19,7 +19,7 @@ export default function ResultsPage() {
   return (
     <Layout>
       <Head>
-        <title>Your Results | IT Career Assessment</title>
+        <title>Your Results | TIRA</title>
         <meta name="description" content="View your IT career assessment results and personalized recommendations." />
       </Head>
       
