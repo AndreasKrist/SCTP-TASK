@@ -222,7 +222,7 @@ export default function Home() {
                           <div className="text-center sm:text-left sm:mt-1">
                             <h3 className="font-semibold text-lg text-blue-800">Choose Your Area of Discipline</h3>
                             <p className="text-blue-700 text-sm mt-1">
-                              Select between Network Administration or Cybersecurity
+                              Select between Network or Cybersecurity
                             </p>
                           </div>
                         </motion.div>

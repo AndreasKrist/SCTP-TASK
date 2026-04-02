@@ -10,7 +10,8 @@ export default function RoleSelection() {
   const roles = [
     {
       id: 'networkAdmin',
-      title: 'Network Administration',  // CHANGED: Was "Network Administrator"
+      title: 'SCTP Network Administration',
+      certifications: 'ITIL 4 + CompTIA A+ + Network+ + Ops Problem Solving',
       description: 'Manage and maintain computer networks, ensuring they function efficiently and securely.',
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 sm:h-16 sm:w-16 text-blue-500 mb-3 sm:mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -27,7 +28,8 @@ export default function RoleSelection() {
     },
     {
       id: 'cybersecurity',
-      title: 'Cybersecurity',
+      title: 'SCTP CYBER SECURITY',
+      certifications: 'ITIL 4 + CCNA Security + CND + CEH + Supervisory Decision Making',
       description: 'Protect systems, networks, and data from digital attacks and unauthorized access.',
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 sm:h-16 sm:w-16 text-blue-500 mb-3 sm:mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -73,12 +75,12 @@ export default function RoleSelection() {
           Click one of the disciplines below to select it!
         </p>
 
-        {/* Clear Instructions */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+        {/* Clear Instructions - HIDDEN - Uncomment to show */}
+        {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
           <p className="text-blue-700 text-center text-sm">
             📋 First, click on one of the disciplines below to select it (it will be highlighted). Then click the <strong>&quot;Continue&quot;</strong> button at the bottom to move to the questions.
           </p>
-        </div>
+        </div> */}
         
         <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:gap-8 lg:grid-cols-2 mb-8">
           {roles.map((role) => (
@@ -93,26 +95,29 @@ export default function RoleSelection() {
             >
               <div className="flex flex-col items-center text-center mb-4 sm:mb-6">
                 {role.icon}
-                <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-blue-800">{role.title}</h3>
+                <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-blue-800 whitespace-nowrap">{role.title}</h3>
+                <p className="text-xs sm:text-sm text-blue-500 mt-1">{role.certifications}</p>
               </div>
               
-              <p className="text-blue-700 mb-4 sm:mb-6 text-center text-sm sm:text-base lg:text-lg">
+              {/* Description - HIDDEN - Uncomment to show */}
+              {/* <p className="text-blue-700 mb-4 sm:mb-6 text-center text-sm sm:text-base lg:text-lg">
                 {role.description}
-              </p>
+              </p> */}
               
-              <div className="mt-4 sm:mt-6">
+              {/* Key skills - HIDDEN - Uncomment to show */}
+              {/* <div className="mt-4 sm:mt-6">
                 <p className="text-xs sm:text-sm font-medium text-blue-700 mb-2 sm:mb-3">Key skills:</p>
                 <div className="flex flex-wrap gap-1 sm:gap-2">
                   {role.skills.map((skill) => (
-                    <span 
-                      key={skill} 
+                    <span
+                      key={skill}
                       className="inline-block px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm bg-blue-100 text-blue-600 rounded-full"
                     >
                       {skill}
                     </span>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
           ))}
         </div>

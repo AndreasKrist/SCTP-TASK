@@ -11,24 +11,24 @@ function CircularScore({ score }) {
   const offset = CIRCUMFERENCE * (1 - score / 100);
 
   const color =
-    score >= 90 ? '#16a34a' :   // green
-    score >= 80 ? '#2563eb' :   // blue
-    score >= 60 ? '#d97706' :   // amber
+    score >= 85 ? '#16a34a' :   // green
+    score >= 75 ? '#2563eb' :   // blue
+    score >= 50 ? '#d97706' :   // amber
                   '#dc2626';    // red
 
   return (
-    <div className="relative w-32 h-32 flex-shrink-0">
+    <div className="relative w-48 h-48 flex-shrink-0">
       <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r={RADIUS} fill="none" stroke="#dbeafe" strokeWidth="8" />
+        <circle cx="50" cy="50" r={RADIUS} fill="none" stroke="#dbeafe" strokeWidth="6" />
         <circle
           cx="50" cy="50" r={RADIUS}
-          fill="none" stroke={color} strokeWidth="8" strokeLinecap="round"
+          fill="none" stroke={color} strokeWidth="6" strokeLinecap="round"
           strokeDasharray={CIRCUMFERENCE} strokeDashoffset={offset}
           style={{ transition: 'stroke-dashoffset 0.8s ease' }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-bold" style={{ color }}>{score}%</span>
+        <span className="text-5xl font-bold" style={{ color }}>{score}%</span>
       </div>
     </div>
   );
@@ -36,13 +36,15 @@ function CircularScore({ score }) {
 
 function SectionBar({ label, score, weight }) {
   const color =
-    score >= 80 ? 'bg-green-500' :
-    score >= 60 ? 'bg-amber-500' :
+    score >= 85 ? 'bg-green-500' :
+    score >= 75 ? 'bg-blue-500' :
+    score >= 50 ? 'bg-amber-500' :
                   'bg-red-400';
 
   const textColor =
-    score >= 80 ? 'text-green-700' :
-    score >= 60 ? 'text-amber-700' :
+    score >= 85 ? 'text-green-700' :
+    score >= 75 ? 'text-blue-700' :
+    score >= 50 ? 'text-amber-700' :
                   'text-red-600';
 
   return (
@@ -69,7 +71,7 @@ const OPTION_LABELS = ['a', 'b', 'c', 'd'];
 function AnswerReviewPanel({ sessionQuestions, answers, selectedRole, onClose }) {
   const [activeSection, setActiveSection] = useState('aptitude');
 
-  const roleLabel = selectedRole === 'networkAdmin' ? 'Network Administration' : 'Cybersecurity';
+  const roleLabel = selectedRole === 'networkAdmin' ? 'Network' : 'Cybersecurity';
 
   const sections = [
     { key: 'aptitude', label: 'Aptitude', questions: sessionQuestions.aptitude, answers: answers.aptitude },
@@ -192,15 +194,15 @@ export default function Results() {
   const [showReview, setShowReview] = useState(false);
 
   const roleNames = {
-    networkAdmin: 'Network Administration',
-    cybersecurity: 'Cybersecurity',
+    networkAdmin: 'SCTP Network Administration',
+    cybersecurity: 'SCTP Cyber Security',
   };
 
   const overallMessage =
-    results.successRate >= 90 ? 'Excellent! You have a very strong foundation.' :
-    results.successRate >= 80 ? 'Great work! You have a solid foundation.' :
-    results.successRate >= 60 ? 'Good effort. Focused learning will help you grow.' :
-                                'You may benefit from foundational training first.';
+    results.successRate >= 85 ? 'Excellent! You have a very strong foundation.' :
+    results.successRate >= 75 ? 'Great work! You have a solid foundation.' :
+    results.successRate >= 50 ? 'Good effort. Focused learning will help you grow.' :
+                                '';
 
   const sectionScores = results.sectionScores || { aptitude: 0, general: 0, roleSpecific: 0 };
 
@@ -224,31 +226,31 @@ export default function Results() {
           </div>
 
           {/* Overall Score Card */}
-          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 mb-6 flex items-center gap-6">
+          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 mb-6 flex flex-col items-center text-center gap-4">
+            <p className="text-xs uppercase tracking-wide text-blue-400 font-semibold">Overall Score</p>
             <CircularScore score={results.successRate} />
             <div>
-              <p className="text-xs uppercase tracking-wide text-blue-400 font-semibold mb-1">Overall Score</p>
               <h3 className="text-lg font-semibold text-blue-800 leading-snug mb-2">
-                Your preliminary level of understanding in {roleNames[selectedRole]}
+                Tech Industry Readiness of {roleNames[selectedRole]}
               </h3>
-              <p className="text-sm text-blue-600">{overallMessage}</p>
+              {overallMessage && <p className="text-sm text-blue-600">{overallMessage}</p>}
             </div>
           </div>
 
-          {/* Section Scores */}
-          <div className="bg-white border border-blue-100 rounded-2xl p-6 mb-6 space-y-5">
+          {/* Performance by Section - HIDDEN - Uncomment to show */}
+          {/* <div className="bg-white border border-blue-100 rounded-2xl p-6 mb-6 space-y-5">
             <h3 className="text-base font-semibold text-blue-800 mb-1">Performance by Section</h3>
             <SectionBar label="Aptitude" score={sectionScores.aptitude} weight={50} />
             <SectionBar label="General IT Awareness" score={sectionScores.general} weight={25} />
             <SectionBar label={roleNames[selectedRole]} score={sectionScores.roleSpecific} weight={25} />
-          </div>
+          </div> */}
 
-          {/* Footer note */}
-          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-8">
+          {/* Footer note - HIDDEN - Uncomment to show */}
+          {/* <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-8">
             <p className="text-blue-700 text-sm text-center">
               Please feel free to contact ITEL to inquire about specific courses that can help you succeed in your chosen career path.
             </p>
-          </div>
+          </div> */}
 
           {/* Review Button */}
           <div className="mb-6">

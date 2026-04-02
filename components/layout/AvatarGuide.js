@@ -41,7 +41,7 @@ export default function AvatarGuide() {
         return `${firstName}! 📝 I see you're on the information page. Please fill in all the required fields (marked with red *), then click the ${createButtonText('Continue')} button at the bottom to move to the next step. Don't worry, your information is safe with us!`;
       
       case 'roleSelection':
-        return `${firstName}! 🎯 I see you need to choose your discipline. Click on either "Network Administration" or "Cybersecurity" - the box will turn blue when selected. Then click the ${createButtonText('Continue')} button at the bottom to proceed with your chosen path!`;
+        return `${firstName}! 🎯 I see you need to choose your discipline. Click on either "Network" or "Cybersecurity" - the box will turn blue when selected. Then click the ${createButtonText('Continue')} button at the bottom to proceed with your chosen path!`;
       
       case 'generalQuestions':
         if (currentBatch === 0) {
@@ -51,7 +51,7 @@ export default function AvatarGuide() {
         }
       
       case 'roleQuestions':
-        const roleName = selectedRole === 'networkAdmin' ? 'Network Administration' : 'Cybersecurity';
+        const roleName = selectedRole === 'networkAdmin' ? 'Network' : 'Cybersecurity';
         if (currentBatch === 0) {
           return `${firstName}! 🎯 Now you're on the ${roleName} questions - excellent choice! Click ${createButtonText('Yes')} or ${createButtonText('No')} for each question based on your knowledge. Don't worry if you don't know something - that's normal! Click ${createButtonText('Continue')} when all questions are answered.`;
         } else {
@@ -183,7 +183,7 @@ The courses I've recommended will build your confidence and skills step by step!
 
 🎯 <b>What we'll do together:</b>
 1. First, I'll ask for some basic information about you
-2. Then you'll choose between Network Administration or Cybersecurity  
+2. Then you'll choose between Network or Cybersecurity  
 3. We'll go through some simple Yes/No questions
 4. Finally, you'll get personalized course recommendations - all automatically saved!
 
@@ -207,7 +207,7 @@ Ready to start this journey? I'll be with you every step of the way! 🚀`;
         return `This is exciting, ${firstName}! 🚀 Time to choose your IT adventure!
 
 🎯 <b>What to do here:</b>
-1. Read about both options: Network Administration and Cybersecurity
+1. Read about both options: Network and Cybersecurity
 2. Click on the box of your preferred choice (it will turn blue)
 3. Click the ${createButtonText('Continue')} button at the bottom
 
@@ -242,7 +242,7 @@ Which one calls to you? 🤔`;
         }
       
       case 'roleQuestions':
-        const roleName = selectedRole === 'networkAdmin' ? 'Network Administration' : 'Cybersecurity';
+        const roleName = selectedRole === 'networkAdmin' ? 'Network' : 'Cybersecurity';
         if (currentBatch === 0) {
           setAvatarExpression('focused');
           return `Excellent choice, ${firstName}! 🎯 Now for ${roleName} specific questions.

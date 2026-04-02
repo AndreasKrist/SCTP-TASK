@@ -83,7 +83,7 @@ export const aptitudeQuestions = [
       a: { text: "Hide it", points: 0 },
       b: { text: "Report and correct it", points: 100 },
       c: { text: "Ignore it", points: 10 },
-      d: { text: "Blame the system", points: 0 },
+      d: { text: "Blame system", points: 0 },
     },
   },
   {
@@ -184,7 +184,7 @@ export const aptitudeQuestions = [
   },
   {
     id: "apQ13",
-    text: "A team disagreement occurs.",
+    text: "Team disagreement occurs.",
     category: "workplaceBehaviour",
     courseRecommendation: "IT Workflow and Planning",
     options: {
@@ -212,7 +212,7 @@ export const aptitudeQuestions = [
     category: "problemSolving",
     courseRecommendation: "IT Workflow and Planning",
     options: {
-      a: { text: "Ignore the improvement", points: 0 },
+      a: { text: "Ignore improvement", points: 0 },
       b: { text: "Suggest improvement", points: 100 },
       c: { text: "Keep silent", points: 20 },
       d: { text: "Only tell friends", points: 10 },
@@ -256,7 +256,7 @@ export const aptitudeQuestions = [
   },
   {
     id: "apQ19",
-    text: "A critical issue occurs during operations.",
+    text: "Critical issue occurs during operations.",
     category: "decisionMaking",
     courseRecommendation: "Troubleshooting Computer Problems",
     options: {
@@ -376,7 +376,7 @@ export const generalQuestions = [
     category: "networking",
     courseRecommendation: "Network Configuration Essentials",
     options: {
-      a: { text: "Assigns IP addresses automatically", points: 100 },
+      a: { text: "Assigns IP automatically", points: 100 },
       b: { text: "Blocks websites", points: 0 },
       c: { text: "Encrypts files", points: 0 },
       d: { text: "Stores data", points: 0 },
@@ -408,7 +408,7 @@ export const generalQuestions = [
   },
   {
     id: "genQ11",
-    text: "What is the difference between SSD and HDD?",
+    text: "What is SSD vs HDD difference?",
     category: "hardware",
     courseRecommendation: "Computer Hardware Fundamentals",
     options: {
@@ -448,7 +448,7 @@ export const generalQuestions = [
     category: "networking",
     courseRecommendation: "Networking Fundamentals: Connectivity Types",
     options: {
-      a: { text: "Overall computer speed", points: 0 },
+      a: { text: "Computer speed overall", points: 0 },
       b: { text: "Data transfer capacity", points: 100 },
       c: { text: "Storage size", points: 0 },
       d: { text: "CPU power", points: 0 },
@@ -492,7 +492,7 @@ export const generalQuestions = [
   },
   {
     id: "genQ18",
-    text: "What is a software update/patch?",
+    text: "WWhat is an update/patch?",
     category: "software",
     courseRecommendation: "Software Installation and Management",
     options: {
@@ -554,7 +554,7 @@ export const networkAdminQuestions = [
     options: {
       a: { text: "Reboot all PCs", points: 20 },
       b: { text: "Check DHCP service and scope", points: 100 },
-      c: { text: "Replace the router", points: 20 },
+      c: { text: "Replace router", points: 20 },
       d: { text: "Change IP manually for all users", points: 40 },
     },
   },
@@ -591,7 +591,7 @@ export const networkAdminQuestions = [
       a: { text: "Restart switches", points: 20 },
       b: { text: "Implement QoS", points: 100 },
       c: { text: "Disable VLANs", points: 0 },
-      d: { text: "Reduce number of users", points: 40 },
+      d: { text: "Reduce users", points: 40 },
     },
   },
   {
@@ -639,7 +639,7 @@ export const networkAdminQuestions = [
       a: { text: "DHCP failure", points: 0 },
       b: { text: "Port security violation", points: 100 },
       c: { text: "DNS error", points: 20 },
-      d: { text: "IPv6 misconfiguration", points: 40 },
+      d: { text: "IPv6 misconfig", points: 40 },
     },
   },
   {
@@ -668,7 +668,7 @@ export const networkAdminQuestions = [
   },
   {
     id: "netQ12",
-    text: "A user receives an APIPA address (169.254.x.x). What does this indicate?",
+    text: "A user receives an APIPA address (169.254.x.x). What does it indicate?",
     category: "troubleshooting",
     courseRecommendation: "Network Troubleshooting Basics",
     options: {
@@ -722,7 +722,7 @@ export const networkAdminQuestions = [
     options: {
       a: { text: "Encrypt traffic", points: 0 },
       b: { text: "Translate private to public IP", points: 100 },
-      c: { text: "Assign VLANs", points: 20 },
+      c: { text: "Assign VLAN", points: 20 },
       d: { text: "Increase bandwidth", points: 20 },
     },
   },
@@ -752,7 +752,7 @@ export const networkAdminQuestions = [
   },
   {
     id: "netQ19",
-    text: "What is the main advantage of IPv6?",
+    text: "What is IPv6 main advantage?",
     category: "networking",
     courseRecommendation: "Advanced IP Addressing and Subnetting",
     options: {
@@ -796,7 +796,7 @@ export const cybersecurityQuestions = [
   },
   {
     id: "cyberQ2",
-    text: "A phishing email was clicked by a staff member. What should you do FIRST?",
+    text: "A phishing email was clicked by staff. What should you do FIRST?",
     category: "incidentResponse",
     courseRecommendation: "Common Cyber Threats and Attacks",
     options: {
@@ -814,7 +814,7 @@ export const cybersecurityQuestions = [
     options: {
       a: { text: "Attack systems", points: 0 },
       b: { text: "Identify vulnerabilities ethically", points: 100 },
-      c: { text: "Disable firewalls", points: 0 },
+      c: { text: "Disable firewall", points: 0 },
       d: { text: "Monitor users only", points: 40 },
     },
   },
@@ -862,7 +862,7 @@ export const cybersecurityQuestions = [
     options: {
       a: { text: "Trust internal users", points: 0 },
       b: { text: "Verify everything continuously", points: 100 },
-      c: { text: "No authentication needed", points: 0 },
+      c: { text: "No authentication", points: 0 },
       d: { text: "Open network", points: 0 },
     },
   },
@@ -873,9 +873,9 @@ export const cybersecurityQuestions = [
     courseRecommendation: "Endpoint Security Fundamentals",
     options: {
       a: { text: "Ignore", points: 0 },
-      b: { text: "Risk assess and apply patch management", points: 100 },
+      b: { text: "Risk assess and patch management", points: 100 },
       c: { text: "Restart the system", points: 20 },
-      d: { text: "Wait for it to fail", points: 0 },
+      d: { text: "Wait for failure", points: 0 },
     },
   },
   {
@@ -886,8 +886,8 @@ export const cybersecurityQuestions = [
     options: {
       a: { text: "Break systems maliciously", points: 0 },
       b: { text: "Simulate real attacks to find weaknesses", points: 100 },
-      c: { text: "Increase system speed", points: 0 },
-      d: { text: "Monitor network traffic", points: 40 },
+      c: { text: "Increase speed", points: 0 },
+      d: { text: "Monitor traffic", points: 40 },
     },
   },
   {
@@ -896,15 +896,15 @@ export const cybersecurityQuestions = [
     category: "incidentResponse",
     courseRecommendation: "Common Cyber Threats and Attacks",
     options: {
-      a: { text: "High CPU usage", points: 20 },
+      a: { text: "High CPU", points: 20 },
       b: { text: "Unusual outbound traffic", points: 100 },
-      c: { text: "DNS working normally", points: 0 },
-      d: { text: "Successful logins", points: 0 },
+      c: { text: "DNS working", points: 0 },
+      d: { text: "Login success", points: 0 },
     },
   },
   {
     id: "cyberQ11",
-    text: "What is the best response to a ransomware attack?",
+    text: "What is the best response to ransomware?",
     category: "incidentResponse",
     courseRecommendation: "Common Cyber Threats and Attacks",
     options: {
@@ -923,7 +923,7 @@ export const cybersecurityQuestions = [
       a: { text: "Store files", points: 0 },
       b: { text: "Centralized log monitoring", points: 100 },
       c: { text: "Routing", points: 0 },
-      d: { text: "DHCP management", points: 0 },
+      d: { text: "DHCP", points: 0 },
     },
   },
   {
@@ -940,11 +940,11 @@ export const cybersecurityQuestions = [
   },
   {
     id: "cyberQ14",
-    text: "What is the goal of patch management?",
+    text: "What is patch management goal?",
     category: "security",
     courseRecommendation: "Endpoint Security Fundamentals",
     options: {
-      a: { text: "Slow down the system", points: 0 },
+      a: { text: "Slow system", points: 0 },
       b: { text: "Fix vulnerabilities", points: 100 },
       c: { text: "Increase attack surface", points: 0 },
       d: { text: "Disable updates", points: 0 },
@@ -958,7 +958,7 @@ export const cybersecurityQuestions = [
     options: {
       a: { text: "Ignore staff behavior", points: 0 },
       b: { text: "Access control and monitoring", points: 100 },
-      c: { text: "Open access for everyone", points: 0 },
+      c: { text: "Open acces", points: 0 },
       d: { text: "No logging", points: 0 },
     },
   },
@@ -971,7 +971,7 @@ export const cybersecurityQuestions = [
       a: { text: "Ignore threats", points: 0 },
       b: { text: "Identify and mitigate risks", points: 100 },
       c: { text: "Accept all risks", points: 20 },
-      d: { text: "Remove all users", points: 0 },
+      d: { text: "Remove users", points: 0 },
     },
   },
   {
@@ -995,7 +995,7 @@ export const cybersecurityQuestions = [
       a: { text: "Panic", points: 0 },
       b: { text: "Contain the incident", points: 100 },
       c: { text: "Inform the public", points: 20 },
-      d: { text: "Restart all systems", points: 20 },
+      d: { text: "Restart systems", points: 20 },
     },
   },
   {

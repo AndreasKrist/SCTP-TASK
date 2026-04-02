@@ -84,15 +84,11 @@ export function AssessmentProvider({ children }) {
     setStage('biodata');
   };
 
-  // Get current batch of 5 questions
+  // Get all 10 questions for the current section
   const getCurrentBatch = () => {
-    let questions = [];
-    if (currentQuestionSet === 'aptitude') questions = sessionQuestions.aptitude;
-    else if (currentQuestionSet === 'general') questions = sessionQuestions.general;
-    else questions = sessionQuestions.roleSpecific;
-
-    const startIndex = currentBatch * 5;
-    return questions.slice(startIndex, startIndex + 5);
+    if (currentQuestionSet === 'aptitude') return sessionQuestions.aptitude;
+    if (currentQuestionSet === 'general') return sessionQuestions.general;
+    return sessionQuestions.roleSpecific;
   };
 
   // Record answers for the current batch
@@ -123,30 +119,16 @@ export function AssessmentProvider({ children }) {
         setCurrentBatch(0);
         break;
       case 'aptitudeQuestions':
-        if (currentBatch === 0) {
-          setCurrentBatch(1);
-        } else {
-          setStage('generalQuestions');
-          setCurrentQuestionSet('general');
-          setCurrentBatch(0);
-        }
+        setStage('generalQuestions');
+        setCurrentQuestionSet('general');
         break;
       case 'generalQuestions':
-        if (currentBatch === 0) {
-          setCurrentBatch(1);
-        } else {
-          setStage('roleQuestions');
-          setCurrentQuestionSet('roleSpecific');
-          setCurrentBatch(0);
-        }
+        setStage('roleQuestions');
+        setCurrentQuestionSet('roleSpecific');
         break;
       case 'roleQuestions':
-        if (currentBatch === 0) {
-          setCurrentBatch(1);
-        } else {
-          calculateResults();
-          setStage('results');
-        }
+        calculateResults();
+        setStage('results');
         break;
       default:
         break;
@@ -162,29 +144,15 @@ export function AssessmentProvider({ children }) {
         setStage('biodata');
         break;
       case 'aptitudeQuestions':
-        if (currentBatch === 1) {
-          setCurrentBatch(0);
-        } else {
-          setStage('roleSelection');
-        }
+        setStage('roleSelection');
         break;
       case 'generalQuestions':
-        if (currentBatch === 1) {
-          setCurrentBatch(0);
-        } else {
-          setStage('aptitudeQuestions');
-          setCurrentQuestionSet('aptitude');
-          setCurrentBatch(1);
-        }
+        setStage('aptitudeQuestions');
+        setCurrentQuestionSet('aptitude');
         break;
       case 'roleQuestions':
-        if (currentBatch === 1) {
-          setCurrentBatch(0);
-        } else {
-          setStage('generalQuestions');
-          setCurrentQuestionSet('general');
-          setCurrentBatch(1);
-        }
+        setStage('generalQuestions');
+        setCurrentQuestionSet('general');
         break;
       default:
         break;
@@ -324,25 +292,24 @@ export function AssessmentProvider({ children }) {
     setCurrentBatch(0);
   };
 
-  // Progress: 6 total batches (aptitude×2, general×2, role×2)
+  // Progress: 3 total sections (aptitude, general, role)
   const getBatchProgress = () => {
-    const stageOffset = {
-      aptitudeQuestions: 0,
+    const stageIndex = {
+      aptitudeQuestions: 1,
       generalQuestions: 2,
-      roleQuestions: 4,
+      roleQuestions: 3,
     };
-    const offset = stageOffset[stage] ?? 0;
-    const completedBatches = offset + currentBatch;
-    const totalBatches = 6;
+    const current = stageIndex[stage] ?? 1;
+    const total = 3;
     return {
-      current: completedBatches + 1,
-      total: totalBatches,
-      percentage: Math.round(((completedBatches + 1) / totalBatches) * 100),
+      current,
+      total,
+      percentage: Math.round((current / total) * 100),
     };
   };
 
   const getRoleName = () => {
-    const roleNames = { networkAdmin: 'Network Administration', cybersecurity: 'Cybersecurity' };
+    const roleNames = { networkAdmin: 'Network', cybersecurity: 'Cybersecurity' };
     return roleNames[selectedRole] || '';
   };
 

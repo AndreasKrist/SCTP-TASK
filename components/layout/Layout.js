@@ -45,7 +45,8 @@ export default function Layout({ children }) {
       
       {/* FOOTER HIDDEN - Uncomment the line below to show footer in the future */}
       {/* <Footer /> */}
-      <AvatarGuide />
+      {/* CHATBOT HIDDEN - Uncomment the line below to show chatbot in the future */}
+      {/* <AvatarGuide /> */}
     </div>
   );
 }

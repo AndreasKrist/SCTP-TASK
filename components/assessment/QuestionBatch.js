@@ -35,7 +35,14 @@ export default function QuestionBatch() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [currentBatch, currentQuestionSet]);
+    // Center Q1 so Q1→Q2 scroll distance matches Q2→Q3
+    setTimeout(() => {
+      if (questions.length > 0) {
+        const el = document.getElementById(`question-${questions[0].id}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 300);
+  }, [currentQuestionSet]);
 
   // Merge stored answers with local batch answers
   const getCurrentAnswers = () => {
@@ -117,11 +124,10 @@ export default function QuestionBatch() {
   };
 
   const getBatchTitle = () => {
-    const part = currentBatch === 0 ? 'Part 1' : 'Part 2';
-    if (currentQuestionSet === 'aptitude') return `Aptitude — ${part}`;
-    if (currentQuestionSet === 'general') return `General IT Skills — ${part}`;
-    const roleNames = { networkAdmin: 'Network Administration', cybersecurity: 'Cybersecurity' };
-    return `${roleNames[selectedRole]} — ${part}`;
+    if (currentQuestionSet === 'aptitude') return `Section 1 — General Aptitude`;
+    if (currentQuestionSet === 'general') return `Section 2 — General IT Skills`;
+    const roleNames = { networkAdmin: 'SCTP Network Administration', cybersecurity: 'SCTP Cyber Security' };
+    return `Section 3 — ${roleNames[selectedRole]}`;
   };
 
   const handleCategoryChange = () => {
@@ -195,11 +201,12 @@ export default function QuestionBatch() {
           </p>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        {/* Question instruction - HIDDEN - Uncomment to show */}
+        {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
           <p className="text-blue-700 text-center text-sm">
             📋 For each question, select the best answer (A, B, C, or D). After answering all questions, click Continue.
           </p>
-        </div>
+        </div> */}
 
         <div className="space-y-6 mb-6 sm:mb-8">
           {questions.map((question, index) => {

@@ -125,14 +125,15 @@ export default function BiodataForm() {
         </motion.h2>
         
         {/* Clear Instructions */}
-        <motion.div 
+        {/* Biodata instruction - HIDDEN - Uncomment to show */}
+        {/* <motion.div
           className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8"
           variants={itemVariants}
         >
           <p className="text-blue-700 text-center text-sm">
             📝 Please fill in your information below, then click the <strong>&ldquo;Continue&rdquo;</strong> button at the bottom to move to the next step.
           </p>
-        </motion.div>
+        </motion.div> */}
         
         <motion.form 
           onSubmit={handleSubmit} 
