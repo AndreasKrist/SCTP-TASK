@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAssessment } from '../../contexts/AssessmentContext';
 import Button from '../ui/Button';
 import ProgressBar from './ProgressBar';
@@ -29,6 +29,20 @@ export default function QuestionBatch() {
   const questions = getCurrentBatch();
   const progress = getBatchProgress();
   const [batchAnswers, setBatchAnswers] = useState({});
+
+  // Shuffle option display order once per session per question (stable across re-renders)
+  const shuffledOptionsMap = useMemo(() => {
+    const map = {};
+    questions.forEach(q => {
+      const keys = ['a', 'b', 'c', 'd'];
+      for (let i = keys.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [keys[i], keys[j]] = [keys[j], keys[i]];
+      }
+      map[q.id] = keys;
+    });
+    return map;
+  }, [questions]);
   const [showCategoryConfirm, setShowCategoryConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
@@ -72,7 +86,7 @@ export default function QuestionBatch() {
     }, 200);
   };
 
-  const isFinalBatch = () => currentQuestionSet === 'roleSpecific' && currentBatch === 1;
+  const isFinalBatch = () => currentQuestionSet === 'roleSpecific';
 
   const handleNext = async () => {
     const allAnswers = getCurrentAnswers();
@@ -224,7 +238,7 @@ export default function QuestionBatch() {
                 </h3>
 
                 <div className="space-y-2">
-                  {OPTION_LABELS.map(key => {
+                  {(shuffledOptionsMap[question.id] || OPTION_LABELS).map(key => {
                     const option = question.options[key];
                     const isSelected = currentAnswer === key;
                     return (

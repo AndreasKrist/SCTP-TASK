@@ -74,18 +74,8 @@ export default function Admin() {
     setSelectedUser(null);
   };
 
-  const handleExport = () => {
-    const dataStr = JSON.stringify(users, null, 2);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'assessment_results.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
+  // handleExport HIDDEN - Uncomment and re-add Export Data button to use
+  // const handleExport = () => { ... };
 
   const formatDuration = (seconds) => {
     const mins = Math.floor(seconds / 60);

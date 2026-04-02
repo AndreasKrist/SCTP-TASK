@@ -23,7 +23,7 @@ export default function ResultsPage() {
         <meta name="description" content="View your IT career assessment results and personalized recommendations." />
       </Head>
       
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-4">
         <Results />
       </div>
     </Layout>

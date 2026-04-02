@@ -57,24 +57,22 @@ export default function BiodataForm() {
 
   // Animation variants
   const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      y: 0,
       transition: {
-        duration: 0.6,
+        duration: 0.1,
         when: "beforeChildren",
-        staggerChildren: 0.1
+        staggerChildren: 0
       }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 }
+      transition: { duration: 0.1 }
     }
   };
 
@@ -102,10 +100,10 @@ export default function BiodataForm() {
       initial="hidden"
       animate="visible"
     >
-      <div className="p-8">
+      <div className="p-6">
         {/* Start Over Button */}
-        <motion.div 
-          className="flex justify-center mb-6"
+        <motion.div
+          className="flex justify-center mb-4"
           variants={itemVariants}
         >
           <Button 
@@ -117,8 +115,8 @@ export default function BiodataForm() {
           </Button>
         </motion.div>
 
-        <motion.h2 
-          className="text-2xl font-bold mb-4 text-center text-blue-800"
+        <motion.h2
+          className="text-xl font-bold mb-3 text-center text-blue-800"
           variants={itemVariants}
         >
           Tell Us About Yourself
@@ -137,7 +135,7 @@ export default function BiodataForm() {
         
         <motion.form 
           onSubmit={handleSubmit} 
-          className="space-y-6"
+          className="space-y-4"
           variants={containerVariants}
         >
           {biodataQuestions.map((question, index) => (
@@ -171,7 +169,7 @@ export default function BiodataForm() {
                   }
                   variants={formFieldAnimation}
                   transition={{ duration: 0.2 }}
-                  className={`w-full px-4 py-3 border rounded-xl shadow-sm focus:outline-none bg-white ${
+                  className={`w-full px-4 py-2.5 border rounded-xl shadow-sm focus:outline-none bg-white ${
                     errors[question.id] 
                       ? 'border-red-500' 
                       : 'border-gray-300'
@@ -200,7 +198,7 @@ export default function BiodataForm() {
                   }
                   variants={formFieldAnimation}
                   transition={{ duration: 0.2 }}
-                  className={`w-full px-4 py-3 border rounded-xl shadow-sm focus:outline-none ${
+                  className={`w-full px-4 py-2.5 border rounded-xl shadow-sm focus:outline-none ${
                     errors[question.id] 
                       ? 'border-red-500' 
                       : 'border-gray-300'
@@ -212,8 +210,8 @@ export default function BiodataForm() {
             </motion.div>
           ))}
           
-          <motion.div 
-            className="flex justify-center pt-4"
+          <motion.div
+            className="flex justify-center pt-2"
             variants={itemVariants}
           >
             <div className="text-center">

@@ -6,24 +6,14 @@ import AvatarGuide from './AvatarGuide';
 
 // Animation variants for page transitions
 const pageVariants = {
-  initial: {
-    opacity: 0,
-    y: 20
-  },
+  initial: { opacity: 0 },
   animate: {
     opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.3,
-      ease: [0.22, 1, 0.36, 1]
-    }
+    transition: { duration: 0.08 }
   },
   exit: {
     opacity: 0,
-    y: 20,
-    transition: {
-      duration: 0.2
-    }
+    transition: { duration: 0.05 }
   }
 };
 

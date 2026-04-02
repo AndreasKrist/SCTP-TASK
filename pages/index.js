@@ -93,19 +93,19 @@ export default function Home() {
         <link rel="icon" href="/images/itel-logo.png" />
       </Head>
 
-      <div className="container mx-auto px-4 py-6 sm:py-12">
+      <div className="container mx-auto px-4 py-4">
         <motion.div 
           className="max-w-4xl mx-auto"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.1 }}
         >
           <div className="text-center mb-8 sm:mb-12">
             <motion.h1 
               className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-blue-900 relative px-2"
-              initial={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.7 }}
+              transition={{ duration: 0.1 }}
             >
               <span className="relative inline-block">
                 <span className="block sm:inline">TIRA: Tech Industry </span>
@@ -114,7 +114,7 @@ export default function Home() {
                   className="absolute -bottom-2 left-0 w-full h-1 bg-blue-500"
                   initial={{ width: 0 }}
                   animate={{ width: '100%' }}
-                  transition={{ delay: 0.8, duration: 0.6 }}
+                  transition={{ duration: 0.1 }}
                 ></motion.span>
               </span>
             </motion.h1>
@@ -123,7 +123,7 @@ export default function Home() {
               className="text-lg sm:text-xl text-blue-700 px-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.7 }}
+              transition={{ duration: 0.1 }}
             >
               {/* Unlock Your IT Potential with Personalized Course Recommendations. */}
               Explore Your IT Know-How with TIRA
@@ -132,17 +132,17 @@ export default function Home() {
           
           <motion.div
             className="bg-white rounded-2xl shadow-lg overflow-hidden border border-blue-100"
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
+            transition={{ duration: 0.1 }}
           >
             <div className="p-6 sm:p-8">
               {/* Welcome Section */}
               <motion.div 
                 className="text-center mb-6 sm:mb-8"
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8, duration: 0.5 }}
+                transition={{ duration: 0.1 }}
               >
                 <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-blue-900">
                   Welcome to ITEL&apos;s TIRA: Tech Industry Readiness Assessor! 👋
@@ -163,7 +163,7 @@ export default function Home() {
                 className="mb-6 sm:mb-8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1, duration: 0.5 }}
+                transition={{ duration: 0.1 }}
               >
                 <div className="text-center mb-4">
                   <button
@@ -258,9 +258,9 @@ export default function Home() {
               
               <motion.div 
                 className="text-center"
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2, duration: 0.5 }}
+                transition={{ duration: 0.1 }}
               >
                 <PrimaryButton 
                   onClick={handleStartAssessment}
@@ -273,7 +273,7 @@ export default function Home() {
                   className="mt-4 text-sm sm:text-base text-blue-600"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 1.4, duration: 0.5 }}
+                  transition={{ duration: 0.1 }}
                 >
                   This assessment will take only between 3 to 5 minutes to complete
                 </motion.p>

@@ -11,13 +11,15 @@ export default function Assessment() {
   const router = useRouter();
   const { stage } = useAssessment();
   
-  // Redirect to results page when assessment is complete
+  // Handle all redirects in useEffect only — never during render
   useEffect(() => {
     if (stage === 'results') {
       router.push('/results');
+    } else if (stage === 'welcome') {
+      router.push('/');
     }
   }, [stage, router]);
-  
+
   // Determine which component to render based on current stage
   const renderStageComponent = () => {
     switch (stage) {
@@ -30,10 +32,6 @@ export default function Assessment() {
       case 'roleQuestions':
         return <QuestionBatch />;
       default:
-        // If we're not at any of these stages, redirect back to home
-        if (typeof window !== 'undefined') {
-          router.push('/');
-        }
         return null;
     }
   };
@@ -45,7 +43,7 @@ export default function Assessment() {
         <meta name="description" content="Take your IT career assessment to discover your potential." />
       </Head>
       
-      <div className="container mx-auto px-4 py-12 pb-32 sm:pb-24">
+      <div className="container mx-auto px-4 py-4 pb-8">
 
         {renderStageComponent()}
       </div>

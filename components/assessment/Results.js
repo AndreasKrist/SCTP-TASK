@@ -34,37 +34,8 @@ function CircularScore({ score }) {
   );
 }
 
-function SectionBar({ label, score, weight }) {
-  const color =
-    score >= 85 ? 'bg-green-500' :
-    score >= 75 ? 'bg-blue-500' :
-    score >= 50 ? 'bg-amber-500' :
-                  'bg-red-400';
-
-  const textColor =
-    score >= 85 ? 'text-green-700' :
-    score >= 75 ? 'text-blue-700' :
-    score >= 50 ? 'text-amber-700' :
-                  'text-red-600';
-
-  return (
-    <div>
-      <div className="flex justify-between items-center mb-1">
-        <div>
-          <span className="text-sm font-medium text-blue-800">{label}</span>
-          <span className="text-xs text-blue-400 ml-2">({weight}% weight)</span>
-        </div>
-        <span className={`text-sm font-bold ${textColor}`}>{score}%</span>
-      </div>
-      <div className="w-full bg-blue-100 rounded-full h-3">
-        <div
-          className={`${color} h-3 rounded-full transition-all duration-700`}
-          style={{ width: `${score}%` }}
-        />
-      </div>
-    </div>
-  );
-}
+// SectionBar — HIDDEN - Uncomment if Performance by Section is re-enabled
+// function SectionBar({ label, score, weight }) { ... }
 
 const OPTION_LABELS = ['a', 'b', 'c', 'd'];
 
@@ -204,7 +175,7 @@ export default function Results() {
     results.successRate >= 50 ? 'Good effort. Focused learning will help you grow.' :
                                 '';
 
-  const sectionScores = results.sectionScores || { aptitude: 0, general: 0, roleSpecific: 0 };
+  // const sectionScores = results.sectionScores || { aptitude: 0, general: 0, roleSpecific: 0 }; // HIDDEN - re-enable with Performance by Section
 
   const handleStartOver = () => {
     resetAssessment();
