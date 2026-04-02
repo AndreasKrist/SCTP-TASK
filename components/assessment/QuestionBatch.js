@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAssessment } from '../../contexts/AssessmentContext';
 import Button from '../ui/Button';
 import ProgressBar from './ProgressBar';
@@ -24,25 +24,12 @@ export default function QuestionBatch() {
     calculateResults,
     sessionQuestions,
     assessmentStartTime,
+    shuffledOptionsMap,
   } = useAssessment();
 
   const questions = getCurrentBatch();
   const progress = getBatchProgress();
   const [batchAnswers, setBatchAnswers] = useState({});
-
-  // Shuffle option display order once per session per question (stable across re-renders)
-  const shuffledOptionsMap = useMemo(() => {
-    const map = {};
-    questions.forEach(q => {
-      const keys = ['a', 'b', 'c', 'd'];
-      for (let i = keys.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [keys[i], keys[j]] = [keys[j], keys[i]];
-      }
-      map[q.id] = keys;
-    });
-    return map;
-  }, [questions]);
   const [showCategoryConfirm, setShowCategoryConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
@@ -117,6 +104,7 @@ export default function QuestionBatch() {
           sessionQuestions,
           answers,
           durationSeconds,
+          shuffledOptionsMap,
         }).catch(err => console.error('Firebase save error:', err));
 
         setIsSaving(false);
@@ -238,13 +226,14 @@ export default function QuestionBatch() {
                 </h3>
 
                 <div className="space-y-2">
-                  {(shuffledOptionsMap[question.id] || OPTION_LABELS).map(key => {
-                    const option = question.options[key];
-                    const isSelected = currentAnswer === key;
+                  {(shuffledOptionsMap[question.id] || OPTION_LABELS).map((originalKey, displayIndex) => {
+                    const option = question.options[originalKey];
+                    const displayLabel = OPTION_LABELS[displayIndex].toUpperCase();
+                    const isSelected = currentAnswer === originalKey;
                     return (
                       <button
-                        key={key}
-                        onClick={() => handleAnswer(question.id, key)}
+                        key={originalKey}
+                        onClick={() => handleAnswer(question.id, originalKey)}
                         className={`w-full text-left flex items-start gap-3 px-4 py-3 rounded-lg border transition-all duration-150 min-h-[48px]
                           ${isSelected
                             ? 'bg-blue-600 border-blue-600 text-white shadow-md'
@@ -253,7 +242,7 @@ export default function QuestionBatch() {
                       >
                         <span className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold mt-0.5
                           ${isSelected ? 'border-white text-white' : 'border-blue-400 text-blue-600'}`}>
-                          {key.toUpperCase()}
+                          {displayLabel}
                         </span>
                         <span className="text-sm sm:text-base leading-snug">{option.text}</span>
                       </button>

@@ -10,8 +10,8 @@ export default function RoleSelection() {
   const roles = [
     {
       id: 'networkAdmin',
-      title: 'SCTP Network Administration',
-      certifications: 'ITIL 4 + CompTIA A+ + Network+ + Ops Problem Solving',
+      title: '(SCTP) Higher Certificate in Network Administration',
+      certifications: '',
       description: 'Manage and maintain computer networks, ensuring they function efficiently and securely.',
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 sm:h-16 sm:w-16 text-blue-500 mb-3 sm:mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -28,8 +28,8 @@ export default function RoleSelection() {
     },
     {
       id: 'cybersecurity',
-      title: 'SCTP CYBER SECURITY',
-      certifications: 'ITIL 4 + CCNA Security + CND + CEH + Supervisory Decision Making',
+      title: '(SCTP) Advanced Certificate in Cyber Security',
+      certifications: '',
       description: 'Protect systems, networks, and data from digital attacks and unauthorized access.',
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 sm:h-16 sm:w-16 text-blue-500 mb-3 sm:mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -95,8 +95,7 @@ export default function RoleSelection() {
             >
               <div className="flex flex-col items-center text-center mb-4 sm:mb-6">
                 {role.icon}
-                <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-blue-800 whitespace-nowrap">{role.title}</h3>
-                <p className="text-xs sm:text-sm text-blue-500 mt-1">{role.certifications}</p>
+                <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-blue-800 text-center">{role.title}</h3>
               </div>
               
               {/* Description - HIDDEN - Uncomment to show */}

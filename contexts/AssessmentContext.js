@@ -17,6 +17,20 @@ function pickRandom(pool, count = 10) {
   return shuffled.slice(0, count);
 }
 
+// Generate shuffled option order for each question
+function buildShuffledOptionsMap(questions) {
+  const map = {};
+  questions.forEach(q => {
+    const keys = ['a', 'b', 'c', 'd'];
+    for (let i = keys.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [keys[i], keys[j]] = [keys[j], keys[i]];
+    }
+    map[q.id] = keys;
+  });
+  return map;
+}
+
 export function AssessmentProvider({ children }) {
   const [biodata, setBiodata] = useState({
     fullName: '',
@@ -59,6 +73,9 @@ export function AssessmentProvider({ children }) {
     weaknesses: [],
   });
 
+  // Shuffled option display order per question — { [questionId]: ['c','a','d','b'] }
+  const [shuffledOptionsMap, setShuffledOptionsMap] = useState({});
+
   // Timer: tracks when questions start
   const [assessmentStartTime, setAssessmentStartTime] = useState(null);
 
@@ -72,11 +89,11 @@ export function AssessmentProvider({ children }) {
 
   // Initialize random question sets for this session
   const initializeSessionQuestions = (role) => {
-    setSessionQuestions({
-      aptitude: pickRandom(aptitudeQuestions, 10),
-      general: pickRandom(generalQuestions, 10),
-      roleSpecific: pickRandom(roleQuestions[role], 10),
-    });
+    const aptitude = pickRandom(aptitudeQuestions, 10);
+    const general = pickRandom(generalQuestions, 10);
+    const roleSpecific = pickRandom(roleQuestions[role], 10);
+    setSessionQuestions({ aptitude, general, roleSpecific });
+    setShuffledOptionsMap(buildShuffledOptionsMap([...aptitude, ...general, ...roleSpecific]));
   };
 
   const startAssessment = () => {
@@ -272,6 +289,7 @@ export function AssessmentProvider({ children }) {
     setSessionQuestions({ aptitude: [], general: [], roleSpecific: [] });
     setAnswers({ aptitude: {}, general: {}, roleSpecific: {} });
     setResults({ successRate: 0, sectionScores: { aptitude: 0, general: 0, roleSpecific: 0 }, recommendations: [], strengths: [], weaknesses: [] });
+    setShuffledOptionsMap({});
     setAssessmentStartTime(null);
   };
 
@@ -336,6 +354,7 @@ export function AssessmentProvider({ children }) {
     getRoleName,
     calculateResults,
     assessmentStartTime,
+    shuffledOptionsMap,
   };
 
   return (

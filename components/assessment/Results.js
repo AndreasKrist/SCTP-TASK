@@ -39,7 +39,7 @@ function CircularScore({ score }) {
 
 const OPTION_LABELS = ['a', 'b', 'c', 'd'];
 
-function AnswerReviewPanel({ sessionQuestions, answers, selectedRole, onClose }) {
+function AnswerReviewPanel({ sessionQuestions, answers, selectedRole, shuffledOptionsMap, onClose }) {
   const [activeSection, setActiveSection] = useState('aptitude');
 
   const roleLabel = selectedRole === 'networkAdmin' ? 'Network' : 'Cybersecurity';
@@ -114,10 +114,11 @@ function AnswerReviewPanel({ sessionQuestions, answers, selectedRole, onClose })
                     {idx + 1}. {q.text}
                   </p>
                   <div className="space-y-1.5">
-                    {OPTION_LABELS.map(k => {
-                      const opt = q.options[k];
-                      const isUser = k === userAnswer;
-                      const isBest = k === bestKey;
+                    {(shuffledOptionsMap[q.id] || OPTION_LABELS).map((originalKey, displayIndex) => {
+                      const displayLabel = OPTION_LABELS[displayIndex].toUpperCase();
+                      const opt = q.options[originalKey];
+                      const isUser = originalKey === userAnswer;
+                      const isBest = originalKey === bestKey;
 
                       let bg = 'bg-white border-blue-100';
                       if (isBest && isUser) bg = 'bg-green-50 border-green-300';
@@ -125,13 +126,13 @@ function AnswerReviewPanel({ sessionQuestions, answers, selectedRole, onClose })
                       else if (isUser) bg = userPoints >= 50 ? 'bg-amber-50 border-amber-300' : 'bg-red-50 border-red-300';
 
                       return (
-                        <div key={k} className={`flex items-start gap-2 px-3 py-2 rounded-lg border text-sm ${bg}`}>
+                        <div key={originalKey} className={`flex items-start gap-2 px-3 py-2 rounded-lg border text-sm ${bg}`}>
                           <span className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center text-xs font-bold mt-0.5 ${
                             isBest ? 'border-green-500 text-green-600' :
                             isUser ? (userPoints >= 50 ? 'border-amber-400 text-amber-500' : 'border-red-400 text-red-500') :
                             'border-blue-300 text-blue-500'
                           }`}>
-                            {k.toUpperCase()}
+                            {displayLabel}
                           </span>
                           <span className="flex-1 text-blue-800">{opt.text}</span>
                           <div className="flex items-center gap-2 flex-shrink-0">
@@ -160,7 +161,7 @@ function AnswerReviewPanel({ sessionQuestions, answers, selectedRole, onClose })
 }
 
 export default function Results() {
-  const { results, selectedRole, resetAssessment, sessionQuestions, answers } = useAssessment();
+  const { results, selectedRole, resetAssessment, sessionQuestions, answers, shuffledOptionsMap } = useAssessment();
   const router = useRouter();
   const [showReview, setShowReview] = useState(false);
 
@@ -251,6 +252,7 @@ export default function Results() {
                 sessionQuestions={sessionQuestions}
                 answers={answers}
                 selectedRole={selectedRole}
+                shuffledOptionsMap={shuffledOptionsMap}
                 onClose={() => setShowReview(false)}
               />
             </div>
@@ -272,6 +274,7 @@ export default function Results() {
             sessionQuestions={sessionQuestions}
             answers={answers}
             selectedRole={selectedRole}
+            shuffledOptionsMap={shuffledOptionsMap}
             onClose={() => setShowReview(false)}
           />
         </div>
