@@ -77,6 +77,14 @@ export default function Admin() {
   // handleExport HIDDEN - Uncomment and re-add Export Data button to use
   // const handleExport = () => { ... };
 
+  const handleVideoDownload = (url, fullName) => {
+    const safeName = (fullName || 'user').replace(/[^a-zA-Z0-9]/g, '_');
+    const a = document.createElement('a');
+    a.href = `/api/download-video?url=${encodeURIComponent(url)}`;
+    a.download = `Recording_${safeName}.webm`;
+    a.click();
+  };
+
   const formatDuration = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -203,6 +211,31 @@ export default function Admin() {
                     Download PDF Report
                   </button>
                 </div>
+
+                {/* Video Recording */}
+                {selectedUser.videoUrl && (
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <h2 className="text-lg sm:text-xl font-semibold text-blue-800">Session Recording</h2>
+                      <button
+                        onClick={() => handleVideoDownload(selectedUser.videoUrl, selectedUser.fullName)}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Download Video
+                      </button>
+                    </div>
+                    <div className="bg-gray-900 rounded-xl overflow-hidden">
+                      <video
+                        src={selectedUser.videoUrl}
+                        controls
+                        className="w-full max-h-72 object-contain"
+                      />
+                    </div>
+                  </div>
+                )}
 
                 <div className="mb-6">
                   <h2 className="text-lg sm:text-xl font-semibold mb-4 text-blue-800">User Information</h2>

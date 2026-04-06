@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAssessment } from '../../contexts/AssessmentContext';
 import Button from '../ui/Button';
 import ProgressBar from './ProgressBar';
 import { useRouter } from 'next/router';
 import { saveAssessment } from '../../lib/saveAssessment';
+import { useRecorder } from '../../hooks/useRecorder';
+import { uploadRecording } from '../../lib/uploadRecording';
 
 const OPTION_LABELS = ['a', 'b', 'c', 'd'];
 
@@ -33,6 +35,20 @@ export default function QuestionBatch() {
   const [showCategoryConfirm, setShowCategoryConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
+
+  const { startRecording, stopRecording, videoRef, isRecording, cameraError } = useRecorder();
+  const recordingStarted = useRef(false);
+  const [cameraAllowed, setCameraAllowed] = useState(null); // null=unknown, true, false
+  const [minimized, setMinimized] = useState(false);
+
+  // Start recording once when questions begin (only on first section)
+  useEffect(() => {
+    if (recordingStarted.current) return;
+    if (currentQuestionSet === 'aptitude') {
+      recordingStarted.current = true;
+      startRecording().then(() => setCameraAllowed(true)).catch(() => setCameraAllowed(false));
+    }
+  }, [currentQuestionSet, startRecording]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -92,20 +108,31 @@ export default function QuestionBatch() {
       try {
         const calculatedResults = calculateResults();
 
-        // Fire-and-forget — save to Firebase in background, don't block navigation
         const durationSeconds = assessmentStartTime
           ? Math.round((Date.now() - assessmentStartTime) / 1000)
           : null;
 
-        saveAssessment({
-          biodata,
-          selectedRole,
-          results: calculatedResults,
-          sessionQuestions,
-          answers,
-          durationSeconds,
-          shuffledOptionsMap,
-        }).catch(err => console.error('Firebase save error:', err));
+        // Stop recording and upload in background, then save assessment
+        stopRecording().then(async (blob) => {
+          let videoUrl = null;
+          if (blob) {
+            try {
+              videoUrl = await uploadRecording(blob, biodata.fullName);
+            } catch (uploadErr) {
+              console.error('Video upload error:', uploadErr);
+            }
+          }
+          saveAssessment({
+            biodata,
+            selectedRole,
+            results: calculatedResults,
+            sessionQuestions,
+            answers,
+            durationSeconds,
+            shuffledOptionsMap,
+            videoUrl,
+          }).catch(err => console.error('Firebase save error:', err));
+        });
 
         setIsSaving(false);
         nextStage();
@@ -143,7 +170,7 @@ export default function QuestionBatch() {
   };
 
   return (
-    <div className="max-w-5xl w-full mx-auto bg-white rounded-2xl shadow-lg overflow-hidden border border-blue-100">
+    <div className="max-w-5xl w-full mx-auto bg-white rounded-2xl shadow-lg overflow-hidden border border-blue-100 relative">
       <div className="p-4 sm:p-6 lg:p-8">
 
         {/* Start Over */}
@@ -291,6 +318,53 @@ export default function QuestionBatch() {
           </div>
         </div>
       </div>
+
+      {/* Camera preview — fixed bottom-right */}
+      {cameraAllowed !== false && (
+        <div className="fixed bottom-4 right-4 z-50">
+          {minimized ? (
+            <button
+              onClick={() => setMinimized(false)}
+              className="flex items-center gap-2 bg-blue-600 text-white text-xs px-3 py-2 rounded-full shadow-lg hover:bg-blue-700 transition-colors"
+            >
+              <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse" />
+              Camera On
+            </button>
+          ) : (
+            <div className="bg-white rounded-xl shadow-xl border border-blue-200 overflow-hidden w-40 sm:w-48">
+              <div className="flex items-center justify-between px-2 py-1 bg-blue-50 border-b border-blue-100">
+                <div className="flex items-center gap-1.5">
+                  {isRecording && <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />}
+                  <span className="text-xs text-blue-600 font-medium">
+                    {isRecording ? 'Recording' : cameraError ? 'No Camera' : 'Starting...'}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setMinimized(true)}
+                  className="text-blue-400 hover:text-blue-600 text-xs px-1"
+                  title="Minimize"
+                >
+                  —
+                </button>
+              </div>
+              {cameraError ? (
+                <div className="h-24 flex items-center justify-center bg-gray-100">
+                  <p className="text-xs text-gray-400 text-center px-2">Camera not available</p>
+                </div>
+              ) : (
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  muted
+                  playsInline
+                  className="w-full h-24 sm:h-28 object-cover bg-gray-900"
+                  style={{ transform: 'scaleX(-1)' }}
+                />
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

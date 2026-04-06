@@ -492,7 +492,7 @@ export const generalQuestions = [
   },
   {
     id: "genQ18",
-    text: "WWhat is an update/patch?",
+    text: "What is an update/patch?",
     category: "software",
     courseRecommendation: "Software Installation and Management",
     options: {
@@ -958,7 +958,7 @@ export const cybersecurityQuestions = [
     options: {
       a: { text: "Ignore staff behavior", points: 0 },
       b: { text: "Access control and monitoring", points: 100 },
-      c: { text: "Open acces", points: 0 },
+      c: { text: "Open access", points: 0 },
       d: { text: "No logging", points: 0 },
     },
   },

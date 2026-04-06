@@ -11,10 +11,10 @@ function CircularScore({ score }) {
   const offset = CIRCUMFERENCE * (1 - score / 100);
 
   const color =
-    score >= 85 ? '#16a34a' :   // green
-    score >= 75 ? '#2563eb' :   // blue
-    score >= 50 ? '#d97706' :   // amber
-                  '#dc2626';    // red
+    score >= 70 ? '#16a34a' :   // green — Excellent
+    score >= 60 ? '#2563eb' :   // blue — Proficient
+    score >= 50 ? '#d97706' :   // amber — Pass
+                  '#dc2626';    // red — Fail
 
   return (
     <div className="relative w-48 h-48 flex-shrink-0">
@@ -34,8 +34,22 @@ function CircularScore({ score }) {
   );
 }
 
-// SectionBar — HIDDEN - Uncomment if Performance by Section is re-enabled
-// function SectionBar({ label, score, weight }) { ... }
+function SectionBar({ label, score }) {
+  const color = score >= 70 ? 'bg-green-500' : score >= 60 ? 'bg-blue-500' : score >= 50 ? 'bg-amber-500' : 'bg-red-500';
+  const textColor = score >= 70 ? 'text-green-600' : score >= 60 ? 'text-blue-600' : score >= 50 ? 'text-amber-600' : 'text-red-500';
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-1.5">
+        <span className="text-sm font-medium text-blue-800">{label}</span>
+        <span className={`text-sm font-bold ${textColor}`}>{score}%</span>
+      </div>
+      <div className="w-full bg-blue-100 rounded-full h-2">
+        <div className={`h-2 rounded-full transition-all duration-700 ${color}`} style={{ width: `${score}%` }} />
+      </div>
+    </div>
+  );
+}
 
 const OPTION_LABELS = ['a', 'b', 'c', 'd'];
 
@@ -170,13 +184,25 @@ export default function Results() {
     cybersecurity: 'SCTP Cyber Security',
   };
 
-  const overallMessage =
-    results.successRate >= 85 ? 'Excellent! You have a very strong foundation.' :
-    results.successRate >= 75 ? 'Great work! You have a solid foundation.' :
-    results.successRate >= 50 ? 'Good effort. Focused learning will help you grow.' :
-                                '';
+  const grade =
+    results.successRate >= 70 ? 'Excellent' :
+    results.successRate >= 60 ? 'Proficient' :
+    results.successRate >= 50 ? 'Pass' :
+                                'Fail';
 
-  // const sectionScores = results.sectionScores || { aptitude: 0, general: 0, roleSpecific: 0 }; // HIDDEN - re-enable with Performance by Section
+  const gradeColor =
+    results.successRate >= 70 ? 'text-green-600 border-green-300 bg-green-50' :
+    results.successRate >= 60 ? 'text-blue-600 border-blue-300 bg-blue-50' :
+    results.successRate >= 50 ? 'text-amber-600 border-amber-300 bg-amber-50' :
+                                'text-red-600 border-red-300 bg-red-50';
+
+  const overallMessage =
+    results.successRate >= 70 ? 'You have a very strong foundation.' :
+    results.successRate >= 60 ? 'You have a solid foundation.' :
+    results.successRate >= 50 ? 'Focused learning will help you grow.' :
+                                'Keep studying and try again.';
+
+  const sectionScores = results.sectionScores || { aptitude: 0, general: 0, roleSpecific: 0 };
 
   const handleStartOver = () => {
     resetAssessment();
@@ -192,30 +218,32 @@ export default function Results() {
           {/* Header */}
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-blue-800 mb-1">Your Assessment Summary</h2>
-            <p className="text-sm text-blue-500">
-              Based on your responses — {roleNames[selectedRole]}
-            </p>
           </div>
 
           {/* Overall Score Card */}
           <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 mb-6 flex flex-col items-center text-center gap-4">
-            <p className="text-xs uppercase tracking-wide text-blue-400 font-semibold">Overall Score</p>
+            <h3 className="text-lg font-semibold text-blue-800 leading-snug">
+              Tech Industry Readiness of {roleNames[selectedRole]}
+            </h3>
+            <p className="text-xs uppercase tracking-wide text-blue-400 font-semibold -mt-2">Overall Score</p>
             <CircularScore score={results.successRate} />
             <div>
-              <h3 className="text-lg font-semibold text-blue-800 leading-snug mb-2">
-                Tech Industry Readiness of {roleNames[selectedRole]}
-              </h3>
+              <div className="flex justify-center mb-2">
+                <span className={`text-sm font-bold px-4 py-1 rounded-full border ${gradeColor}`}>
+                  {grade}
+                </span>
+              </div>
               {overallMessage && <p className="text-sm text-blue-600">{overallMessage}</p>}
             </div>
           </div>
 
-          {/* Performance by Section - HIDDEN - Uncomment to show */}
-          {/* <div className="bg-white border border-blue-100 rounded-2xl p-6 mb-6 space-y-5">
+          {/* Performance by Section */}
+          <div className="bg-white border border-blue-100 rounded-2xl p-6 mb-6 space-y-5">
             <h3 className="text-base font-semibold text-blue-800 mb-1">Performance by Section</h3>
-            <SectionBar label="Aptitude" score={sectionScores.aptitude} weight={50} />
-            <SectionBar label="General IT Awareness" score={sectionScores.general} weight={25} />
-            <SectionBar label={roleNames[selectedRole]} score={sectionScores.roleSpecific} weight={25} />
-          </div> */}
+            <SectionBar label="Aptitude" score={sectionScores.aptitude} />
+            <SectionBar label="General IT Awareness" score={sectionScores.general} />
+            <SectionBar label={roleNames[selectedRole]} score={sectionScores.roleSpecific} />
+          </div>
 
           {/* Footer note - HIDDEN - Uncomment to show */}
           {/* <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-8">
