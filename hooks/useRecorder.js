@@ -10,24 +10,33 @@ export function useRecorder() {
 
   const startRecording = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 1280, height: 720, frameRate: 24 },
-        audio: true,
-      });
+      // Try with audio first, fall back to video-only if mic is unavailable
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: 1280, height: 720, frameRate: 24 },
+          audio: true,
+        });
+      } catch {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: 1280, height: 720, frameRate: 24 },
+          audio: false,
+        });
+      }
       streamRef.current = stream;
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
 
-      // Pick a supported mimeType — webm on Chrome/Firefox, fallback for Safari
-      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp8')
-        ? 'video/webm;codecs=vp8'
-        : MediaRecorder.isTypeSupported('video/webm')
-        ? 'video/webm'
-        : '';
+      // Let the browser pick the best supported format automatically
+      // Manually specifying codecs (e.g. vp8) can silently fail on some Chrome versions with audio
+      const mimeType =
+        MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' :
+        MediaRecorder.isTypeSupported('video/mp4')  ? 'video/mp4' :
+                                                      '';
 
-      const options = { videoBitsPerSecond: 400000 }; // ~400kbps keeps files small
+      const options = { videoBitsPerSecond: 400000 };
       if (mimeType) options.mimeType = mimeType;
 
       const recorder = new MediaRecorder(stream, options);
@@ -38,11 +47,18 @@ export function useRecorder() {
         if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
       };
 
-      recorder.start(1000); // collect a chunk every 1s
+      recorder.onerror = (e) => {
+        console.error('MediaRecorder error:', e.error);
+        setCameraError(e.error?.message || 'Recording error');
+      };
+
+      recorder.start(1000);
       setIsRecording(true);
       setCameraError(null);
     } catch (err) {
       setCameraError(err.message);
+      // Stop stream if recording failed to start
+      streamRef.current?.getTracks().forEach((t) => t.stop());
     }
   }, []);
 
@@ -55,7 +71,7 @@ export function useRecorder() {
       }
 
       recorder.onstop = () => {
-        const type = chunksRef.current[0]?.type || 'video/webm';
+        const type = chunksRef.current[0]?.type || recorder.mimeType || 'video/webm';
         const blob = new Blob(chunksRef.current, { type });
         // Stop camera
         streamRef.current?.getTracks().forEach((t) => t.stop());

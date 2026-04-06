@@ -112,26 +112,26 @@ export default function QuestionBatch() {
           ? Math.round((Date.now() - assessmentStartTime) / 1000)
           : null;
 
-        // Stop recording and upload in background, then save assessment
-        stopRecording().then(async (blob) => {
-          let videoUrl = null;
-          if (blob) {
-            try {
-              videoUrl = await uploadRecording(blob, biodata.fullName);
-            } catch (uploadErr) {
-              console.error('Video upload error:', uploadErr);
-            }
+        // Stop recording first, upload, then save — all in sequence before navigating
+        const blob = await stopRecording();
+        let videoUrl = null;
+        if (blob) {
+          try {
+            videoUrl = await uploadRecording(blob, biodata.fullName);
+          } catch (uploadErr) {
+            console.error('Video upload error:', uploadErr);
           }
-          saveAssessment({
-            biodata,
-            selectedRole,
-            results: calculatedResults,
-            sessionQuestions,
-            answers,
-            durationSeconds,
-            shuffledOptionsMap,
-            videoUrl,
-          }).catch(err => console.error('Firebase save error:', err));
+        }
+
+        await saveAssessment({
+          biodata,
+          selectedRole,
+          results: calculatedResults,
+          sessionQuestions,
+          answers,
+          durationSeconds,
+          shuffledOptionsMap,
+          videoUrl,
         });
 
         setIsSaving(false);
