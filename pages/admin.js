@@ -122,6 +122,7 @@ export default function Admin() {
       <Layout>
         <Head>
           <title>Admin Login | TIRA</title>
+          <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         </Head>
         <div className="flex items-center justify-center min-h-[60vh] px-4">
           <div className="w-full max-w-sm bg-white rounded-xl shadow-lg border border-blue-100 p-6 sm:p-8">
@@ -171,6 +172,7 @@ export default function Admin() {
     <Layout>
       <Head>
         <title>Admin | TIRA</title>
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
 

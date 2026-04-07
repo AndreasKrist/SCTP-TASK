@@ -38,7 +38,7 @@ export const biodataQuestions = [
 export const aptitudeQuestions = [
   {
     id: "apQ1",
-    text: "You are given unclear instructions. What do you do?",
+    text: "You are given unclear instructions. What should you do?",
     category: "problemSolving",
     courseRecommendation: "IT Workflow and Planning",
     options: {
@@ -54,7 +54,7 @@ export const aptitudeQuestions = [
     category: "decisionMaking",
     courseRecommendation: "IT Workflow and Planning",
     options: {
-      a: { text: "Do easiest first", points: 40 },
+      a: { text: "Do the easiest first", points: 40 },
       b: { text: "Prioritize by importance", points: 100 },
       c: { text: "Random selection", points: 10 },
       d: { text: "Delay all tasks", points: 0 },
@@ -66,33 +66,33 @@ export const aptitudeQuestions = [
     category: "problemSolving",
     courseRecommendation: "Troubleshooting Computer Problems",
     options: {
-      a: { text: "Fix each time it happens", points: 40 },
-      b: { text: "Find root cause", points: 100 },
+      a: { text: "Fix it each time it happens", points: 40 },
+      b: { text: "Find the root cause", points: 100 },
       c: { text: "Ignore it", points: 0 },
       d: { text: "Restart system/workflow", points: 30 },
     },
   },
   {
     id: "apQ4",
-    text: "You made a mistake in a submitted report.",
+    text: "You made a mistake in a report you submitted.",
     category: "workplaceBehaviour",
     courseRecommendation: "IT Workflow and Planning",
     options: {
       a: { text: "Hide it", points: 0 },
       b: { text: "Report and correct it", points: 100 },
       c: { text: "Ignore it", points: 10 },
-      d: { text: "Blame system", points: 0 },
+      d: { text: "Blame the system", points: 0 },
     },
   },
   {
     id: "apQ5",
-    text: "You don't know how to complete a task.",
+    text: "You do not know how to complete a task.",
     category: "problemSolving",
     courseRecommendation: "IT Workflow and Planning",
     options: {
       a: { text: "Guess", points: 10 },
       b: { text: "Ask or research", points: 100 },
-      c: { text: "Avoid task", points: 0 },
+      c: { text: "Avoid the task", points: 0 },
       d: { text: "Wait indefinitely", points: 20 },
     },
   },
@@ -146,7 +146,7 @@ export const aptitudeQuestions = [
   },
   {
     id: "apQ10",
-    text: "You notice inefficiency in a workflow.",
+    text: "You notice inefficiency in workflow.",
     category: "problemSolving",
     courseRecommendation: "IT Workflow and Planning",
     options: {
@@ -170,7 +170,7 @@ export const aptitudeQuestions = [
   },
   {
     id: "apQ12",
-    text: "You are assigned a new, unfamiliar task.",
+    text: "You are assigned a new unfamiliar task.",
     category: "problemSolving",
     courseRecommendation: "IT Workflow and Planning",
     options: {
@@ -210,7 +210,7 @@ export const aptitudeQuestions = [
     category: "problemSolving",
     courseRecommendation: "IT Workflow and Planning",
     options: {
-      a: { text: "Ignore improvement", points: 0 },
+      a: { text: "Ignore the improvement", points: 0 },
       b: { text: "Suggest improvement", points: 100 },
       c: { text: "Keep silent", points: 20 },
       d: { text: "Only tell friends", points: 10 },
@@ -248,7 +248,7 @@ export const aptitudeQuestions = [
     options: {
       a: { text: "Proceed anyway", points: 20 },
       b: { text: "Clarify first", points: 100 },
-      c: { text: "Ignore task", points: 0 },
+      c: { text: "Ignore the task", points: 0 },
       d: { text: "Ask after completion", points: 30 },
     },
   },
@@ -358,7 +358,7 @@ export const generalQuestions = [
   },
   {
     id: "genQ7",
-    text: "What is a VPN?",
+    text: "What is VPN?",
     category: "security",
     courseRecommendation: "Network Security Fundamentals",
     options: {
@@ -406,7 +406,7 @@ export const generalQuestions = [
   },
   {
     id: "genQ11",
-    text: "What is SSD vs HDD difference?",
+    text: "What is the difference between SSD and HDD?",
     category: "hardware",
     courseRecommendation: "Computer Hardware Fundamentals",
     options: {
@@ -495,7 +495,7 @@ export const generalQuestions = [
     courseRecommendation: "Software Installation and Management",
     options: {
       a: { text: "Fixes software issues", points: 100 },
-      b: { text: "Deletes the system", points: 0 },
+      b: { text: "Deletes system", points: 0 },
       c: { text: "Hardware replacement", points: 0 },
       d: { text: "Internet setup", points: 0 },
     },
@@ -518,9 +518,9 @@ export const generalQuestions = [
     category: "troubleshooting",
     courseRecommendation: "Troubleshooting Computer Problems",
     options: {
-      a: { text: "Guessing a solution", points: 0 },
+      a: { text: "Guessing solution", points: 0 },
       b: { text: "Systematic problem solving", points: 100 },
-      c: { text: "Ignoring the issue", points: 0 },
+      c: { text: "Ignoring issue", points: 0 },
       d: { text: "Restart only", points: 20 },
     },
   },
@@ -558,7 +558,7 @@ export const networkAdminQuestions = [
   },
   {
     id: "netQ3",
-    text: "A department reports intermittent disconnections. What should you check FIRST?",
+    text: "A department reports intermittent disconnection. What should you check FIRST?",
     category: "troubleshooting",
     courseRecommendation: "Network Diagnostics and Troubleshooting",
     options: {
@@ -666,7 +666,7 @@ export const networkAdminQuestions = [
   },
   {
     id: "netQ12",
-    text: "A user receives an APIPA address (169.254.x.x). What does it indicate?",
+    text: "A user receives APIPA address (169.254.x.x). What does it indicate?",
     category: "troubleshooting",
     courseRecommendation: "Network Troubleshooting Basics",
     options: {
@@ -702,7 +702,7 @@ export const networkAdminQuestions = [
   },
   {
     id: "netQ15",
-    text: "What causes an IP conflict in a network?",
+    text: "What causes IP conflict in a network?",
     category: "networking",
     courseRecommendation: "IP Addressing and Subnetting",
     options: {
@@ -738,19 +738,19 @@ export const networkAdminQuestions = [
   },
   {
     id: "netQ18",
-    text: "What is the function of a default gateway?",
+    text: "What is the function of the default gateway?",
     category: "networking",
     courseRecommendation: "Introduction to Internet Technologies",
     options: {
       a: { text: "DNS resolution", points: 20 },
-      b: { text: "Route traffic outside the network", points: 100 },
+      b: { text: "Route traffic outside network", points: 100 },
       c: { text: "Store MAC addresses", points: 0 },
       d: { text: "Encrypt traffic", points: 0 },
     },
   },
   {
     id: "netQ19",
-    text: "What is IPv6 main advantage?",
+    text: "What is the main advantage of IPv6?",
     category: "networking",
     courseRecommendation: "Advanced IP Addressing and Subnetting",
     options: {
@@ -767,7 +767,7 @@ export const networkAdminQuestions = [
     courseRecommendation: "Network Diagnostics and Troubleshooting",
     options: {
       a: { text: "Reactive only", points: 20 },
-      b: { text: "Proactive and preventive", points: 100 },
+      b: { text: "Proactive + preventive", points: 100 },
       c: { text: "Avoid responsibility", points: 0 },
       d: { text: "Wait for escalation", points: 40 },
     },
@@ -782,7 +782,7 @@ export const networkAdminQuestions = [
 export const cybersecurityQuestions = [
   {
     id: "cyberQ1",
-    text: "Multiple failed login attempts are detected across systems. What is your FIRST action?",
+    text: "Multiple failed login attempts are detected across systems. What is the FIRST action?",
     category: "incidentResponse",
     courseRecommendation: "Common Cyber Threats and Attacks",
     options: {
@@ -794,19 +794,19 @@ export const cybersecurityQuestions = [
   },
   {
     id: "cyberQ2",
-    text: "A phishing email was clicked by staff. What should you do FIRST?",
+    text: "A phishing email was clicked by a staff member. What should you do FIRST?",
     category: "incidentResponse",
     courseRecommendation: "Common Cyber Threats and Attacks",
     options: {
-      a: { text: "Delete the email", points: 20 },
-      b: { text: "Isolate the affected device", points: 100 },
+      a: { text: "Delete email", points: 20 },
+      b: { text: "Isolate affected device", points: 100 },
       c: { text: "Ignore", points: 0 },
-      d: { text: "Restart the PC", points: 40 },
+      d: { text: "Restart PC", points: 40 },
     },
   },
   {
     id: "cyberQ3",
-    text: "What is the primary goal of the CEH (Certified Ethical Hacker) mindset?",
+    text: "What is the primary goal of the CEH mindset?",
     category: "threats",
     courseRecommendation: "Introduction to Cybersecurity",
     options: {
@@ -818,12 +818,12 @@ export const cybersecurityQuestions = [
   },
   {
     id: "cyberQ4",
-    text: "What is most important in incident response (ITIL)?",
+    text: "What is the most important aspect of incident response (ITIL)?",
     category: "incidentResponse",
     courseRecommendation: "Introduction to Cybersecurity",
     options: {
       a: { text: "Speed only", points: 20 },
-      b: { text: "Containment and documentation", points: 100 },
+      b: { text: "Containment + documentation", points: 100 },
       c: { text: "Ignore minor issues", points: 0 },
       d: { text: "Restart systems", points: 40 },
     },
@@ -846,8 +846,8 @@ export const cybersecurityQuestions = [
     category: "security",
     courseRecommendation: "Network Security Fundamentals",
     options: {
-      a: { text: "Prevent attacks", points: 40 },
-      b: { text: "Detect attacks", points: 100 },
+      a: { text: "Prevent attack", points: 40 },
+      b: { text: "Detect attack", points: 100 },
       c: { text: "Encrypt traffic", points: 0 },
       d: { text: "Route traffic", points: 0 },
     },
@@ -871,8 +871,8 @@ export const cybersecurityQuestions = [
     courseRecommendation: "Endpoint Security Fundamentals",
     options: {
       a: { text: "Ignore", points: 0 },
-      b: { text: "Risk assess and patch management", points: 100 },
-      c: { text: "Restart the system", points: 20 },
+      b: { text: "Risk assess + patch management", points: 100 },
+      c: { text: "Restart system", points: 20 },
       d: { text: "Wait for failure", points: 0 },
     },
   },
@@ -890,7 +890,7 @@ export const cybersecurityQuestions = [
   },
   {
     id: "cyberQ10",
-    text: "What indicates a possible data exfiltration?",
+    text: "What indicates possible data exfiltration?",
     category: "incidentResponse",
     courseRecommendation: "Common Cyber Threats and Attacks",
     options: {
@@ -908,7 +908,7 @@ export const cybersecurityQuestions = [
     options: {
       a: { text: "Pay immediately", points: 0 },
       b: { text: "Isolate affected systems", points: 100 },
-      c: { text: "Restart the system", points: 20 },
+      c: { text: "Restart system", points: 20 },
       d: { text: "Ignore", points: 0 },
     },
   },
@@ -938,7 +938,7 @@ export const cybersecurityQuestions = [
   },
   {
     id: "cyberQ14",
-    text: "What is patch management goal?",
+    text: "What is the goal of patch management?",
     category: "security",
     courseRecommendation: "Endpoint Security Fundamentals",
     options: {
@@ -955,7 +955,7 @@ export const cybersecurityQuestions = [
     courseRecommendation: "Account Security and Protection",
     options: {
       a: { text: "Ignore staff behavior", points: 0 },
-      b: { text: "Access control and monitoring", points: 100 },
+      b: { text: "Access control + monitoring", points: 100 },
       c: { text: "Open access", points: 0 },
       d: { text: "No logging", points: 0 },
     },
@@ -967,7 +967,7 @@ export const cybersecurityQuestions = [
     courseRecommendation: "Introduction to Cybersecurity",
     options: {
       a: { text: "Ignore threats", points: 0 },
-      b: { text: "Identify and mitigate risks", points: 100 },
+      b: { text: "Identify + mitigate risks", points: 100 },
       c: { text: "Accept all risks", points: 20 },
       d: { text: "Remove users", points: 0 },
     },
@@ -992,7 +992,7 @@ export const cybersecurityQuestions = [
     options: {
       a: { text: "Panic", points: 0 },
       b: { text: "Contain the incident", points: 100 },
-      c: { text: "Inform the public", points: 20 },
+      c: { text: "Inform public", points: 20 },
       d: { text: "Restart systems", points: 20 },
     },
   },
@@ -1004,7 +1004,7 @@ export const cybersecurityQuestions = [
     options: {
       a: { text: "Random fixes", points: 0 },
       b: { text: "Structured service management", points: 100 },
-      c: { text: "No process needed", points: 0 },
+      c: { text: "No process", points: 0 },
       d: { text: "Ignore incidents", points: 0 },
     },
   },

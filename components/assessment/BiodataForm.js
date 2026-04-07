@@ -186,6 +186,7 @@ export default function BiodataForm() {
                   id={question.id}
                   name={question.id}
                   value={biodata[question.id] || ''}
+                  placeholder={question.placeholder || ''}
                   onChange={handleChange}
                   onFocus={() => setActiveField(question.id)}
                   onBlur={() => setActiveField(null)}
