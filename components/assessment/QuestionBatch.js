@@ -64,7 +64,13 @@ export default function QuestionBatch() {
     if (recordingStarted.current) return;
     if (currentQuestionSet === 'aptitude') {
       recordingStarted.current = true;
-      startRecording().then(() => setCameraAllowed(true)).catch(() => setCameraAllowed(false));
+      startRecording()
+        .then(() => setCameraAllowed(true))
+        .catch((err) => {
+          // NotAllowedError = user blocked → show lock icon instructions immediately
+          if (err?.name === 'NotAllowedError') setCameraBlocked(true);
+          setCameraAllowed(false);
+        });
     }
   }, [currentQuestionSet, startRecording]);
 
@@ -407,21 +413,28 @@ export default function QuestionBatch() {
             {cameraBlocked ? (
               <>
                 <p className="text-gray-500 text-sm mb-3">
-                  Camera access has been <strong>blocked</strong>. To allow it:
+                  Camera access has been <strong>blocked</strong>. Your browser won&apos;t ask again — you must enable it manually:
                 </p>
                 {isMobile ? (
-                  <ol className="text-left text-sm text-gray-600 bg-gray-50 rounded-xl p-4 mb-5 space-y-1.5">
-                    <li>1. Tap the <strong>lock/info icon</strong> in the address bar (or <strong>aA</strong> on iOS Safari)</li>
-                    <li>2. Open <strong>Website Settings</strong> / <strong>Permissions</strong></li>
-                    <li>3. Set <strong>Camera</strong> to <strong>Allow</strong></li>
-                    <li>4. Tap <strong>Reload Page</strong> below</li>
-                  </ol>
+                  <div className="text-left text-sm text-gray-600 bg-gray-50 rounded-xl p-4 mb-5">
+                    <p className="font-semibold text-gray-700 mb-2">📱 On your phone:</p>
+                    <ol className="space-y-1.5 pl-1">
+                      <li>1. Tap the <strong>lock</strong> or <strong>ⓘ</strong> icon near the URL (on iOS Safari, tap <strong>aA</strong>)</li>
+                      <li>2. Open <strong>Website Settings</strong> or <strong>Permissions</strong></li>
+                      <li>3. Change <strong>Camera</strong> to <strong>Allow</strong></li>
+                      <li>4. Tap <strong>Reload Page</strong> below</li>
+                    </ol>
+                  </div>
                 ) : (
-                  <ol className="text-left text-sm text-gray-600 bg-gray-50 rounded-xl p-4 mb-5 space-y-1">
-                    <li>1. Click the <strong>🔒 lock icon</strong> in your browser&apos;s address bar</li>
-                    <li>2. Find <strong>Camera</strong> and set it to <strong>Allow</strong></li>
-                    <li>3. Click <strong>Retry Camera</strong> below</li>
-                  </ol>
+                  <div className="text-left text-sm text-gray-600 bg-gray-50 rounded-xl p-4 mb-5">
+                    <p className="font-semibold text-gray-700 mb-2">💻 On your computer:</p>
+                    <ol className="space-y-1 pl-1">
+                      <li>1. Click the <strong>🔒 lock icon</strong> on the left of the address bar</li>
+                      <li>2. Find <strong>Camera</strong> in the permissions list</li>
+                      <li>3. Change it to <strong>Allow</strong></li>
+                      <li>4. Click <strong>Reload Page</strong> below</li>
+                    </ol>
+                  </div>
                 )}
               </>
             ) : (
@@ -431,12 +444,21 @@ export default function QuestionBatch() {
             )}
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button
-                onClick={cameraBlocked && isMobile ? () => window.location.reload() : handleRetryCamera}
-                className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
-              >
-                {cameraBlocked && isMobile ? 'Reload Page' : 'Retry Camera'}
-              </button>
+              {cameraBlocked ? (
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Reload Page
+                </button>
+              ) : (
+                <button
+                  onClick={handleRetryCamera}
+                  className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Retry Camera
+                </button>
+              )}
               <button
                 onClick={handleStartOver}
                 className="px-6 py-2.5 border border-gray-300 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-colors"
