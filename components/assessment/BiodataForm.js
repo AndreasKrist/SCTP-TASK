@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import { useAssessment } from '../../contexts/AssessmentContext';
 import Button from '../ui/Button';
 import { biodataQuestions } from '../../data/questions';
-import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 
 export default function BiodataForm() {
   const { biodata, updateBiodata, nextStage, resetAssessment } = useAssessment();
   const [errors, setErrors] = useState({});
-  const [activeField, setActiveField] = useState(null);
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -55,95 +53,32 @@ export default function BiodataForm() {
     router.push('/');
   };
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.1,
-        when: "beforeChildren",
-        staggerChildren: 0
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.1 }
-    }
-  };
-
-  const formFieldAnimation = {
-    focused: {
-      boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.3)",
-      borderColor: "#3b82f6",
-      scale: 1.01
-    },
-    error: {
-      boxShadow: "0 0 0 3px rgba(239, 68, 68, 0.3)",
-      borderColor: "#ef4444",
-    },
-    normal: {
-      boxShadow: "0 0 0 0 rgba(59, 130, 246, 0)",
-      borderColor: "#e5e7eb",
-      scale: 1
-    }
-  };
-
   return (
-    <motion.div 
-      className="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden border border-blue-100"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
+    <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-blue-100">
       <div className="p-6">
         {/* Start Over Button */}
-        <motion.div
-          className="flex justify-center mb-4"
-          variants={itemVariants}
-        >
-          <Button 
-            variant="outline" 
+        <div className="flex justify-center mb-4">
+          <Button
+            variant="outline"
             onClick={handleStartOver}
             className="px-6 py-2 text-sm"
           >
             🔄 Start Over
           </Button>
-        </motion.div>
+        </div>
 
-        <motion.h2
-          className="text-xl font-bold mb-3 text-center text-blue-800"
-          variants={itemVariants}
-        >
+        <h2 className="text-xl font-bold mb-3 text-center text-blue-800">
           Tell Us About Yourself
-        </motion.h2>
+        </h2>
         
-        {/* Clear Instructions */}
-        {/* Biodata instruction - HIDDEN - Uncomment to show */}
-        {/* <motion.div
-          className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8"
-          variants={itemVariants}
-        >
-          <p className="text-blue-700 text-center text-sm">
-            📝 Please fill in your information below, then click the <strong>&ldquo;Continue&rdquo;</strong> button at the bottom to move to the next step.
-          </p>
-        </motion.div> */}
-        
-        <motion.form 
-          onSubmit={handleSubmit} 
+        <form
+          onSubmit={handleSubmit}
           className="space-y-4"
-          variants={containerVariants}
         >
           {biodataQuestions.map((question, index) => (
-            <motion.div 
-              key={question.id} 
+            <div
+              key={question.id}
               className="space-y-1"
-              variants={itemVariants}
-              custom={index}
             >
               <label 
                 htmlFor={question.id} 
@@ -153,25 +88,14 @@ export default function BiodataForm() {
               </label>
               
               {question.type === 'select' ? (
-                <motion.select
+                <select
                   id={question.id}
                   name={question.id}
                   value={biodata[question.id] || ''}
                   onChange={handleChange}
-                  onFocus={() => setActiveField(question.id)}
-                  onBlur={() => setActiveField(null)}
-                  animate={
-                    activeField === question.id
-                      ? "focused"
-                      : errors[question.id]
-                      ? "error"
-                      : "normal"
-                  }
-                  variants={formFieldAnimation}
-                  transition={{ duration: 0.2 }}
-                  className={`w-full px-4 py-2.5 border rounded-xl shadow-sm focus:outline-none bg-white ${
-                    errors[question.id] 
-                      ? 'border-red-500' 
+                  className={`w-full px-4 py-2.5 border rounded-xl shadow-sm bg-white transition-colors focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 ${
+                    errors[question.id]
+                      ? 'border-red-500'
                       : 'border-gray-300'
                   }`}
                 >
@@ -179,44 +103,30 @@ export default function BiodataForm() {
                   {question.options.map((option) => (
                     <option key={option} value={option}>{option}</option>
                   ))}
-                </motion.select>
+                </select>
               ) : (
-                <motion.input
+                <input
                   type={question.type}
                   id={question.id}
                   name={question.id}
                   value={biodata[question.id] || ''}
                   placeholder={question.placeholder || ''}
                   onChange={handleChange}
-                  onFocus={() => setActiveField(question.id)}
-                  onBlur={() => setActiveField(null)}
-                  animate={
-                    activeField === question.id
-                      ? "focused"
-                      : errors[question.id]
-                      ? "error"
-                      : "normal"
-                  }
-                  variants={formFieldAnimation}
-                  transition={{ duration: 0.2 }}
-                  className={`w-full px-4 py-2.5 border rounded-xl shadow-sm focus:outline-none ${
-                    errors[question.id] 
-                      ? 'border-red-500' 
+                  className={`w-full px-4 py-2.5 border rounded-xl shadow-sm transition-colors focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 ${
+                    errors[question.id]
+                      ? 'border-red-500'
                       : 'border-gray-300'
                   }`}
                 />
               )}
-              
+
               <AnimatedError error={errors[question.id]} />
-            </motion.div>
+            </div>
           ))}
-          
-          <motion.div
-            className="flex justify-center pt-2"
-            variants={itemVariants}
-          >
+
+          <div className="flex justify-center pt-2">
             <div className="text-center">
-              <Button 
+              <Button
                 type="submit"
                 className="px-8 py-3 mb-2"
               >
@@ -226,30 +136,19 @@ export default function BiodataForm() {
                 👆 Click &ldquo;Continue&rdquo; to go to the next step
               </p>
             </div>
-          </motion.div>
-        </motion.form>
+          </div>
+        </form>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
-// Animated error message component
+// Error message component
 function AnimatedError({ error }) {
+  if (!error) return null;
   return (
-    <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ 
-        opacity: error ? 1 : 0, 
-        height: error ? 'auto' : 0,
-        marginTop: error ? '0.5rem' : 0
-      }}
-      transition={{ duration: 0.2 }}
-    >
-      {error && (
-        <p className="text-sm text-red-600">
-          {error}
-        </p>
-      )}
-    </motion.div>
+    <p className="text-sm text-red-600 mt-2">
+      {error}
+    </p>
   );
 }

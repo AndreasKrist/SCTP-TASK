@@ -59,6 +59,7 @@ export function useRecorder() {
       setCameraError(err.message);
       // Stop stream if recording failed to start
       streamRef.current?.getTracks().forEach((t) => t.stop());
+      throw err; // re-throw so caller can detect camera failure
     }
   }, []);
 

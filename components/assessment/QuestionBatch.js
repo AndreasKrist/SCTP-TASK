@@ -39,7 +39,25 @@ export default function QuestionBatch() {
   const { startRecording, stopRecording, videoRef, isRecording, cameraError } = useRecorder();
   const recordingStarted = useRef(false);
   const [cameraAllowed, setCameraAllowed] = useState(null); // null=unknown, true, false
+  const cameraAllowedRef = useRef(null); // ref copy so tab lock can read current value
   const [minimized, setMinimized] = useState(false);
+  const [cameraBlocked, setCameraBlocked] = useState(false); // true = browser-level blocked (can't re-prompt)
+
+  // Tab lock
+  const [violations, setViolations] = useState(0);
+  const [showTabWarning, setShowTabWarning] = useState(false);
+  const [terminated, setTerminated] = useState(false);
+  const MAX_VIOLATIONS = 3;
+  const lastViolationRef = useRef(0);
+
+  // Mobile detection (for different camera instructions)
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    setIsMobile(/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent));
+  }, []);
+
+  // Keep ref in sync so tab lock can read cameraAllowed without stale closure
+  useEffect(() => { cameraAllowedRef.current = cameraAllowed; }, [cameraAllowed]);
 
   // Start recording once when questions begin (only on first section)
   useEffect(() => {
@@ -49,6 +67,53 @@ export default function QuestionBatch() {
       startRecording().then(() => setCameraAllowed(true)).catch(() => setCameraAllowed(false));
     }
   }, [currentQuestionSet, startRecording]);
+
+  // Tab lock — detect leaving tab/app
+  useEffect(() => {
+    const recordViolation = () => {
+      // Don't count violations while camera permission is still pending
+      if (cameraAllowedRef.current === null) return;
+      const now = Date.now();
+      if (now - lastViolationRef.current < 1500) return; // debounce to avoid double-counting
+      lastViolationRef.current = now;
+      setViolations(prev => {
+        const next = prev + 1;
+        if (next >= MAX_VIOLATIONS) {
+          setTerminated(true);
+        } else {
+          setShowTabWarning(true);
+        }
+        return next;
+      });
+    };
+
+    const handleVisibilityChange = () => { if (document.hidden) recordViolation(); };
+    const handleBlur = () => recordViolation();
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleBlur);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleBlur);
+    };
+  }, []);
+
+  const handleRetryCamera = async () => {
+    setCameraBlocked(false);
+    recordingStarted.current = false;
+    setCameraAllowed(null);
+
+    recordingStarted.current = true;
+    try {
+      await startRecording();
+      setCameraAllowed(true);
+    } catch (err) {
+      // NotAllowedError = browser/user blocked the camera → show lock icon instructions
+      // Other errors (NotFoundError, NotReadableError) = no camera / hardware issue
+      if (err?.name === 'NotAllowedError') setCameraBlocked(true);
+      setCameraAllowed(false);
+    }
+  };
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -132,6 +197,7 @@ export default function QuestionBatch() {
           durationSeconds,
           shuffledOptionsMap,
           videoUrl,
+          tabViolations: violations,
         });
 
         setIsSaving(false);
@@ -295,15 +361,20 @@ export default function QuestionBatch() {
           </div>
 
           <div className="w-full sm:flex-1 flex flex-col items-center">
-            {!allAnswered() && (
+            {cameraAllowed === null && currentQuestionSet === 'aptitude' && (
+              <span className="text-xs sm:text-sm text-amber-600 text-center mb-2">
+                ⏳ Waiting for camera permission...
+              </span>
+            )}
+            {!allAnswered() && cameraAllowed !== null && (
               <span className="text-xs sm:text-sm text-blue-600 text-center mb-2">
                 Please answer all questions to continue
               </span>
             )}
             <Button
               onClick={handleNext}
-              disabled={!allAnswered() || isSaving}
-              className={`w-full sm:w-auto px-8 py-3 min-h-[48px] mb-2 ${allAnswered() && !isSaving ? 'shadow-lg shadow-blue-500/20' : ''}`}
+              disabled={!allAnswered() || isSaving || cameraAllowed === null}
+              className={`w-full sm:w-auto px-8 py-3 min-h-[48px] mb-2 ${allAnswered() && !isSaving && cameraAllowed !== null ? 'shadow-lg shadow-blue-500/20' : ''}`}
               id="continue-button"
             >
               {isSaving ? 'Saving...' : 'Continue'}
@@ -311,6 +382,8 @@ export default function QuestionBatch() {
             <p className="text-xs text-blue-600 text-center">
               {isSaving
                 ? '📤 Processing...'
+                : cameraAllowed === null && currentQuestionSet === 'aptitude'
+                ? '📷 Please allow camera access to continue'
                 : !allAnswered()
                 ? '👆 Answer all questions above first'
                 : "👆 Click 'Continue' to move to the next section"}
@@ -318,6 +391,113 @@ export default function QuestionBatch() {
           </div>
         </div>
       </div>
+
+      {/* Camera blocked overlay */}
+      {cameraAllowed === false && (
+        <div className="fixed inset-0 z-40 bg-white/95 backdrop-blur-sm flex items-center justify-center">
+          <div className="text-center px-8 py-10 max-w-md">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.069A1 1 0 0121 8.867v6.266a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3l18 18" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">Camera Access Required</h3>
+
+            {cameraBlocked ? (
+              <>
+                <p className="text-gray-500 text-sm mb-3">
+                  Camera access has been <strong>blocked</strong>. To allow it:
+                </p>
+                {isMobile ? (
+                  <ol className="text-left text-sm text-gray-600 bg-gray-50 rounded-xl p-4 mb-5 space-y-1.5">
+                    <li>1. Tap the <strong>lock/info icon</strong> in the address bar (or <strong>aA</strong> on iOS Safari)</li>
+                    <li>2. Open <strong>Website Settings</strong> / <strong>Permissions</strong></li>
+                    <li>3. Set <strong>Camera</strong> to <strong>Allow</strong></li>
+                    <li>4. Tap <strong>Reload Page</strong> below</li>
+                  </ol>
+                ) : (
+                  <ol className="text-left text-sm text-gray-600 bg-gray-50 rounded-xl p-4 mb-5 space-y-1">
+                    <li>1. Click the <strong>🔒 lock icon</strong> in your browser&apos;s address bar</li>
+                    <li>2. Find <strong>Camera</strong> and set it to <strong>Allow</strong></li>
+                    <li>3. Click <strong>Retry Camera</strong> below</li>
+                  </ol>
+                )}
+              </>
+            ) : (
+              <p className="text-gray-500 text-sm mb-6">
+                This assessment requires camera access to proceed. Please allow camera permission when prompted and try again. If you don&apos;t have a camera, you cannot take this assessment.
+              </p>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={cameraBlocked && isMobile ? () => window.location.reload() : handleRetryCamera}
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
+              >
+                {cameraBlocked && isMobile ? 'Reload Page' : 'Retry Camera'}
+              </button>
+              <button
+                onClick={handleStartOver}
+                className="px-6 py-2.5 border border-gray-300 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+              >
+                Start Over
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab warning modal */}
+      {showTabWarning && !terminated && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center">
+            <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-7 h-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-gray-800 mb-1">
+              {violations === MAX_VIOLATIONS - 1 ? '⚠️ Final Warning!' : '⚠️ Warning!'}
+            </h3>
+            <p className="text-gray-500 text-sm mb-1">
+              You left the assessment. This has been recorded.
+            </p>
+            <p className="text-xs font-medium mb-5 text-red-500">
+              Violation {violations} of {MAX_VIOLATIONS} — {MAX_VIOLATIONS - violations} more and your assessment will be terminated.
+            </p>
+            <button
+              onClick={() => setShowTabWarning(false)}
+              className="w-full px-6 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
+            >
+              I Understand, Continue
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Assessment terminated overlay */}
+      {terminated && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center">
+            <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-7 h-7 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-red-600 mb-2">Assessment Terminated</h3>
+            <p className="text-gray-500 text-sm mb-6">
+              You left the assessment too many times. Your session has been terminated. Please start over and stay on this page during the assessment.
+            </p>
+            <button
+              onClick={handleStartOver}
+              className="w-full px-6 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors"
+            >
+              Start Over
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Camera preview — fixed bottom-right */}
       {cameraAllowed !== false && (
