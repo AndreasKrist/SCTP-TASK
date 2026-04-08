@@ -40,7 +40,7 @@ export default function QuestionBatch() {
   const recordingStarted = useRef(false);
   const [cameraAllowed, setCameraAllowed] = useState(null); // null=unknown, true, false
   const cameraAllowedRef = useRef(null); // ref copy so tab lock can read current value
-  const [minimized, setMinimized] = useState(false);
+  const [minimized, setMinimized] = useState(true);
   const [cameraBlocked, setCameraBlocked] = useState(false); // true = browser-level blocked (can't re-prompt)
 
   // Tab lock
