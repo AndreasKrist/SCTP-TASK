@@ -10,11 +10,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 function CircularScore({ score }) {
   const offset = CIRCUMFERENCE * (1 - score / 100);
 
-  const color =
-    score >= 70 ? '#16a34a' :   // green — Excellent
-    score >= 60 ? '#2563eb' :   // blue — Proficient
-    score >= 50 ? '#d97706' :   // amber — Pass
-                  '#dc2626';    // red — Fail
+  const color = score >= 50 ? '#16a34a' : '#dc2626'; // green — Successful, red — Unsuccessful
 
   return (
     <div className="relative w-48 h-48 flex-shrink-0">
@@ -184,23 +180,11 @@ export default function Results() {
     cybersecurity: 'SCTP Cyber Security',
   };
 
-  const grade =
-    results.successRate >= 70 ? 'Excellent' :
-    results.successRate >= 60 ? 'Proficient' :
-    results.successRate >= 50 ? 'Pass' :
-                                'Fail';
+  const grade = results.successRate >= 50 ? 'Successful' : 'Unsuccessful';
 
-  const gradeColor =
-    results.successRate >= 70 ? 'text-green-600 border-green-300 bg-green-50' :
-    results.successRate >= 60 ? 'text-blue-600 border-blue-300 bg-blue-50' :
-    results.successRate >= 50 ? 'text-amber-600 border-amber-300 bg-amber-50' :
-                                'text-red-600 border-red-300 bg-red-50';
-
-  const overallMessage =
-    results.successRate >= 70 ? 'You have a very strong foundation.' :
-    results.successRate >= 60 ? 'You have a solid foundation.' :
-    results.successRate >= 50 ? 'Focused learning will help you grow.' :
-                                'Keep studying and try again.';
+  const gradeColor = results.successRate >= 50
+    ? 'text-green-600 border-green-300 bg-green-50'
+    : 'text-red-600 border-red-300 bg-red-50';
 
   const sectionScores = results.sectionScores || { aptitude: 0, general: 0, roleSpecific: 0 };
 
@@ -233,7 +217,6 @@ export default function Results() {
                   {grade}
                 </span>
               </div>
-              {overallMessage && <p className="text-sm text-blue-600">{overallMessage}</p>}
             </div>
           </div>
 
