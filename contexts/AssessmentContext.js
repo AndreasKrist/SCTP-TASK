@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+const SESSION_KEY = 'tira_resume_state';
 import { aptitudeQuestions, generalQuestions, roleQuestions, courseCatalog } from '../data/questions';
 
 const AssessmentContext = createContext();
@@ -78,6 +80,34 @@ export function AssessmentProvider({ children }) {
 
   // Timer: tracks when questions start
   const [assessmentStartTime, setAssessmentStartTime] = useState(null);
+
+  // Restore state after a camera-permission reload
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(SESSION_KEY);
+      if (saved) {
+        const s = JSON.parse(saved);
+        if (s.biodata) setBiodata(s.biodata);
+        if (s.selectedRole) setSelectedRole(s.selectedRole);
+        if (s.stage) setStage(s.stage);
+        if (s.currentQuestionSet) setCurrentQuestionSet(s.currentQuestionSet);
+        if (s.sessionQuestions) setSessionQuestions(s.sessionQuestions);
+        if (s.answers) setAnswers(s.answers);
+        if (s.shuffledOptionsMap) setShuffledOptionsMap(s.shuffledOptionsMap);
+        if (s.assessmentStartTime) setAssessmentStartTime(s.assessmentStartTime);
+        sessionStorage.removeItem(SESSION_KEY);
+      }
+    } catch (_) {}
+  }, []);
+
+  const saveStateToSession = () => {
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+        biodata, selectedRole, stage, currentQuestionSet,
+        sessionQuestions, answers, shuffledOptionsMap, assessmentStartTime,
+      }));
+    } catch (_) {}
+  };
 
   const updateBiodata = (data) => {
     setBiodata(prev => ({ ...prev, ...data }));
@@ -355,6 +385,7 @@ export function AssessmentProvider({ children }) {
     calculateResults,
     assessmentStartTime,
     shuffledOptionsMap,
+    saveStateToSession,
   };
 
   return (

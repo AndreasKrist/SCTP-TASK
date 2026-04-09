@@ -27,6 +27,7 @@ export default function QuestionBatch() {
     sessionQuestions,
     assessmentStartTime,
     shuffledOptionsMap,
+    saveStateToSession,
   } = useAssessment();
 
   const questions = getCurrentBatch();
@@ -39,7 +40,6 @@ export default function QuestionBatch() {
   const { startRecording, stopRecording, videoRef, isRecording, cameraError } = useRecorder();
   const recordingStarted = useRef(false);
   const [cameraAllowed, setCameraAllowed] = useState(null); // null=unknown, true, false
-  const cameraAllowedRef = useRef(null); // ref copy so tab lock can read current value
   const [minimized, setMinimized] = useState(true);
   const [cameraBlocked, setCameraBlocked] = useState(false); // true = browser-level blocked (can't re-prompt)
 
@@ -56,8 +56,6 @@ export default function QuestionBatch() {
     setIsMobile(/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent));
   }, []);
 
-  // Keep ref in sync so tab lock can read cameraAllowed without stale closure
-  useEffect(() => { cameraAllowedRef.current = cameraAllowed; }, [cameraAllowed]);
 
   // Start recording once when questions begin (only on first section)
   useEffect(() => {
@@ -74,11 +72,11 @@ export default function QuestionBatch() {
     }
   }, [currentQuestionSet, startRecording]);
 
-  // Tab lock — detect leaving tab/app
+  // Tab lock — only active once camera is confirmed working
   useEffect(() => {
+    if (cameraAllowed !== true) return; // don't register until camera is settled and allowed
+
     const recordViolation = () => {
-      // Don't count violations while camera permission is still pending
-      if (cameraAllowedRef.current === null) return;
       const now = Date.now();
       if (now - lastViolationRef.current < 1500) return; // debounce to avoid double-counting
       lastViolationRef.current = now;
@@ -102,7 +100,7 @@ export default function QuestionBatch() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('blur', handleBlur);
     };
-  }, []);
+  }, [cameraAllowed]);
 
   const handleRetryCamera = async () => {
     setCameraBlocked(false);
@@ -422,7 +420,7 @@ export default function QuestionBatch() {
                       <li>1. Tap the <strong>lock</strong> or <strong>ⓘ</strong> icon near the URL (on iOS Safari, tap <strong>aA</strong>)</li>
                       <li>2. Open <strong>Website Settings</strong> or <strong>Permissions</strong></li>
                       <li>3. Change <strong>Camera</strong> to <strong>Allow</strong></li>
-                      <li>4. Tap <strong>Reload Page</strong> below</li>
+                      <li>4. Tap <strong>Try Again</strong> below</li>
                     </ol>
                   </div>
                 ) : (
@@ -432,7 +430,7 @@ export default function QuestionBatch() {
                       <li>1. Click the <strong>🔒 lock icon</strong> on the left of the address bar</li>
                       <li>2. Find <strong>Camera</strong> in the permissions list</li>
                       <li>3. Change it to <strong>Allow</strong></li>
-                      <li>4. Click <strong>Reload Page</strong> below</li>
+                      <li>4. Click <strong>Try Again</strong> below</li>
                     </ol>
                   </div>
                 )}
@@ -444,21 +442,12 @@ export default function QuestionBatch() {
             )}
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              {cameraBlocked ? (
-                <button
-                  onClick={() => window.location.reload()}
-                  className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Reload Page
-                </button>
-              ) : (
-                <button
-                  onClick={handleRetryCamera}
-                  className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Retry Camera
-                </button>
-              )}
+              <button
+                onClick={handleRetryCamera}
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
+              >
+                Try Again
+              </button>
               <button
                 onClick={handleStartOver}
                 className="px-6 py-2.5 border border-gray-300 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-colors"
